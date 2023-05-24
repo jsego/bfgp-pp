@@ -1,0 +1,22 @@
+[DOMAIN]: grid
+
+[TYPES]:
+place:object
+key:object
+shape:object
+
+[FUNCTIONS]:
+conn(?x0:place,?x1:place)
+key_shape(?x2:key,?x3:shape)
+lock_shape(?x4:place,?x5:shape)
+at(?x6:key,?x7:place)
+at_robot(?x8:place)
+locked(?x9:place)
+open(?x10:place)
+holding(?x11:key)
+arm_empty()
+action_unlock(?o1:place,?o2:place,?o3:key,?o4:shape)
+action_move(?o1:place,?o2:place)
+action_pickup(?o1:place,?o2:key)
+action_pickup_and_loose(?o1:place,?o2:key,?o3:key)
+action_putdown(?o1:place,?o2:key)

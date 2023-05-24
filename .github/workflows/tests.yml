@@ -1,0 +1,32 @@
+name: Tests (Ubuntu CI)
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  # Checking reusable workflows
+  #build:    
+  #  uses: jsego/bfgp-pp/.github/workflows/build.yml@main
+    
+  tests:
+    runs-on: ubuntu-latest
+    #needs: build  # Checking reusable workflows
+    steps:
+    # Comment everything besides 'Test' when reusing workflows
+    - uses: actions/checkout@v3
+
+    - name: Configure CMake
+      run: |
+        cmake -DENABLE_TESTING:BOOL=TRUE -S $GITHUB_WORKSPACE/tests -B ${{runner.workspace}}/tests/build
+        cp -r $GITHUB_WORKSPACE/tests/test_files ${{runner.workspace}}/tests/
+
+    - name: Build
+      working-directory: ${{runner.workspace}}/tests/build
+      run: export CXXFLAGS="-Werror" && cmake --build .    
+
+    - name: Test
+      working-directory: ${{runner.workspace}}/tests/build
+      run: GTEST_OUTPUT=xml:test-results/ GTEST_COLOR=1 ctest -V

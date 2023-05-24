@@ -1,0 +1,12 @@
+[DOMAIN]: Gripper
+[TYPES]: ball:object
+gripper:object room:object
+[CONSTANTS]:
+left:gripper
+right:gripper
+[FUNCTIONS]:
+at-robby(?r:room)
+at(?b:ball,?r:room)
+free(?g:gripper)
+carry(?b:ball,?g:gripper)
+

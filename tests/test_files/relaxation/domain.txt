@@ -1,0 +1,34 @@
+[DOMAIN]: Gripper
+
+[TYPES]:
+ball:object
+gripper:object
+room:object
+
+[CONSTANTS]:
+left:gripper
+right:gripper
+roomA:room
+roomB:room
+
+[FUNCTIONS]:
+at_robby(?r:room)
+at(?b:ball,?r:room)
+free(?g:gripper)
+carry(?b:ball,?g:gripper)
+
+[ACTIONS]:
+[ACTION]: pick(?b:ball,?r:room,?g:gripper)
+[TYPE]: memory
+[PRECONDITIONS]: (free(?g)=1) (at_robby(?r)=1) (at(?b,?r)=1)
+[EFFECTS]: (free(?g)=0) (at(?b,?r)=0) (carry(?b,?g)=1)
+
+[ACTION]: drop(?b:ball,?r:room,?g:gripper)
+[TYPE]: memory
+[PRECONDITIONS]: (carry(?b,?g)=1) (at_robby(?r)=1)
+[EFFECTS]: (free(?g)=1) (at(?b,?r)=1) (carry(?b,?g)=0)
+
+[ACTION]: move(?r1:room,?r2:room)
+[TYPE]: memory
+[PRECONDITIONS]: (at_robby(?r1)=1)
+[EFFECTS]: (at_robby(?r1)=0) (at_robby(?r2)=1)

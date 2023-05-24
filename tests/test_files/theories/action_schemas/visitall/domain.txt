@@ -1,0 +1,10 @@
+[DOMAIN]: grid-visit-all
+
+[TYPES]:
+place:object
+
+[FUNCTIONS]:
+action_move(?x0:place,?x1:place)
+connected(?x0:place,?x1:place)
+at_robot(?x2:place)
+visited(?x3:place)

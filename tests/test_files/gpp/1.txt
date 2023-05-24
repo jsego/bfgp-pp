@@ -1,0 +1,5 @@
+[INSTANCE]: blocksworld-2
+[DOMAIN]: Blocksworld
+[OBJECTS]: b1:block b2:block
+[INIT]: (ontable(b1)=1) (ontable(b2)=1) (handempty()=1) (clear(b1)=1) (clear(b2)=1)
+[GOAL]: (holding(b1)=1)

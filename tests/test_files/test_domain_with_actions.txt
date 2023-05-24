@@ -1,0 +1,14 @@
+[DOMAIN]: Blocksworld
+[TYPES]: block:object
+[FUNCTIONS]:
+on(?b1:block,?b2:block)
+ontable(?b:block)
+handempty()
+clear(?b:block)
+holding(?b:block)
+
+[ACTIONS]:
+[ACTION]: pickup(?b:block)
+[TYPE]: memory
+[PRECONDITIONS]: (handempty()=1) (ontable(?b)=1) (clear(?b)=1)
+[EFFECTS]: (handempty()=0) (ontable(?b)=0) (clear(?b)=0) (holding(?b)=1)
