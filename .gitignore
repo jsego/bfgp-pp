@@ -4,6 +4,6 @@ cmake-*
 *__pycache__*
 tmp/
 .idea/
-*build*
+tests/build/
 */.idea/
 experiments/
