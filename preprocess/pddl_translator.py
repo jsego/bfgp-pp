@@ -121,13 +121,15 @@ def main():
 	parser.add_argument("-d", "--domain", type=str, required=True)
 	parser.add_argument("-i", "--instance", type=str, required=True)
 	parser.add_argument("-o", "--outdir", type=str, required=True)
-	parser.add_argument("-a", "--action", type=str, default="", required=False)
+	parser.add_argument("-a", "--action", type=str, default="")
+	parser.add_argument("-id","--instance_id", type=int, default=0)
 	args = parser.parse_args()
 
 	translate_pddl_to_ram(domain_file=args.domain,
 						  instance_file=args.instance,
 						  output_dir=args.outdir,
-						  pddl_action=args.action)
+						  pddl_action=args.action,
+						  id=args.instance_id)
 
 
 if __name__ == "__main__":
