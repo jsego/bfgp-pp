@@ -169,6 +169,9 @@ namespace factories {
         auto engine = std::make_unique<search::BFS>(std::move(gpp));
         //if(arg_parser->get_theory_name() == "bitvec") engine->set_bitvec_theory(true); // ToDo: add it as an argument option?
 
+        // Set verbosity
+        engine->set_verbose(arg_parser->is_verbose());
+
         // Set the theory
         engine->set_theory(make_theory(arg_parser));
 
@@ -205,7 +208,8 @@ namespace factories {
         auto prog_lines = int(prog_ins.size());
         auto prog = std::make_unique<Program>(gpp);
         auto gd = gpp->get_generalized_domain();
-        std::cout << gd->to_string(true) << "\n";
+        if(arg_parser->is_verbose())
+            std::cout << gd->to_string(true) << "\n";
 //auto th = std::make_unique<theory::ActionSchemas>();
 //prog->set_instruction(prog_lines-1, gd->get_instruction("end"));
         for( int j = 0; j < prog_lines; j++ ){

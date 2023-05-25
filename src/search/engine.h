@@ -10,7 +10,7 @@ namespace search{
 class Engine{
 public:
 	Engine( std::unique_ptr<GeneralizedPlanningProblem> gpp ) :
-            _evaluated_nodes(0), _expanded_nodes(0), _gpp(std::move(gpp)){
+            _evaluated_nodes(0), _expanded_nodes(0), _gpp(std::move(gpp)), _verbose(false){
     };
 
     /// Owns _evaluation_functions and _gpp
@@ -48,6 +48,10 @@ public:
         _evaluation_functions.emplace_back(std::move(new_ef) );
     }
 
+    void set_verbose(bool verbose){
+        _verbose = verbose;
+    }
+
     // Set a new theory for the syntactic constraints
     void set_theory(std::unique_ptr<theory::Theory> theory){
         _theory = std::move(theory);
@@ -68,6 +72,10 @@ public:
     [[nodiscard]] theory::Theory* get_theory() const{
         return _theory.get();
     }
+
+    [[nodiscard]] bool get_verbose() const{
+        return _verbose;
+    }
 	
 protected:
 	value_t _evaluated_nodes;
@@ -75,6 +83,7 @@ protected:
     std::vector<std::unique_ptr<evaluation_functions::EvaluationFunction>> _evaluation_functions;
 	std::unique_ptr<GeneralizedPlanningProblem> _gpp;
     std::unique_ptr<theory::Theory> _theory;
+    bool _verbose;
 };
 
 }

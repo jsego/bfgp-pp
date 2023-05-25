@@ -230,7 +230,7 @@ namespace search {
                 if (current_evaluations < best_evaluations) {
                     best_evaluations = current_evaluations;
                     print_node(current.get());
-                } else if (_expanded_nodes % PROGRAM_FREQUENCY == 0) {
+                } else if (_verbose and _expanded_nodes % PROGRAM_FREQUENCY == 0) {
                     print_node(current.get());
                 }
 

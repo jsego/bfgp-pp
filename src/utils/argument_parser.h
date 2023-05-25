@@ -124,6 +124,8 @@ namespace utils {
                     " activates input instances progressively, where tentative solutions fails; "
                     " type: boolean (True, False; true, false; 1, 0);"
                     " default: false\n\n"
+                    "  " + _verbosity_stype + ", " + _verbosity_type + " for verbose output; type: boolean"
+                    " (True, False; true, false; 1, 0); default: false\n\n"
                     "usage examples:\n"
                     "1. Synthesis: ./main.bin -m synthesis -l 5 -f domains/synthesis/triangular-sum/\n"
                     "2. Program validation: ./main.bin -m validation-prog -f domains/synthesis/triangular-sum/ -p experiments/synthesis/triangular-sum/triangular-sum_5_ed_ilc.prog\n"
@@ -172,6 +174,11 @@ namespace utils {
                         helper("Exactly one output file expected but " + std::to_string(arg_vals.size()) + " found.");
                     parse_output_file(arg_vals[0]);
                 }
+                else if(arg_type == _verbosity_ntype){
+                    if(arg_vals.size() != 1u)
+                        helper("Exactly one boolean expected but " + std::to_string(arg_vals.size()) + " found.");
+                    parse_verbosity(arg_vals[0]);
+                }
                 // Check if the argument type is an unrecognized token
                 else helper("Unrecognized input token: " + arg_type);
             }
@@ -193,6 +200,8 @@ namespace utils {
                 _num_extra_pointers = 0;
             if(arg_map.find(_progressive_ntype) == arg_map.end())
                 _progressive = false;
+            if(arg_map.find(_verbosity_ntype) == arg_map.end())
+                _verbose = false;
         }
 
         void parse_validation_arguments(const std::map<std::string, vec_str_t > &arg_map) {
@@ -223,6 +232,11 @@ namespace utils {
                                std::to_string(arg_vals.size()) + " found.");
                     parse_num_extra_pointers(arg_vals[0]);
                 }
+                else if(arg_type == _verbosity_ntype){
+                    if(arg_vals.size() != 1u)
+                        helper("Exactly one boolean expected but " + std::to_string(arg_vals.size()) + " found.");
+                    parse_verbosity(arg_vals[0]);
+                }
                 // Check if the argument type is an unrecognized token
                 else helper("Unrecognized input token: " + arg_type);
             }
@@ -240,6 +254,8 @@ namespace utils {
                 _infinite_detection = false;
             if(arg_map.find(_num_extra_pointers_ntype) == arg_map.end())
                 _num_extra_pointers = 0;
+            if(arg_map.find(_verbosity_ntype) == arg_map.end())
+                _verbose = false;
 
             // Parse from _program_file_name the number of _program_lines
             _program_lines = utils::count_non_empty_file_lines(_program_file_name);
@@ -342,6 +358,13 @@ namespace utils {
             //    helper("Wrong input. The output file \"" + _output_file + "\" is not a valid path.");
         }
 
+        void parse_verbosity(const std::string &str_verbosity){
+            auto it = _valid_boolean.find(str_verbosity);
+            if (it == _valid_boolean.end())
+                helper("Expected boolean value for verbose argument but " + str_verbosity + " found.");
+            _infinite_detection = it->second;
+        }
+
         [[nodiscard]] std::string get_mode() const {
             return _mode;
         }
@@ -396,6 +419,10 @@ namespace utils {
             return _output_file;
         }
 
+        [[nodiscard]] bool is_verbose() const{
+            return _verbose;
+        }
+
     private:
         [[nodiscard]] static std::string normalize_arg_type(const std::string &arg_type) {
             if (arg_type == _help_type or arg_type == _help_stype) return _help_ntype;
@@ -411,6 +438,7 @@ namespace utils {
                 return _num_extra_pointers_ntype;
             if (arg_type == _progressive_type or arg_type == _progressive_stype) return _progressive_ntype;
             if (arg_type == _output_file_type or arg_type == _output_file_stype) return _output_file_ntype;
+            if (arg_type == _verbosity_type or arg_type == _verbosity_stype) return _verbosity_ntype;
             return _unrecognized_token;
         }
 
@@ -427,6 +455,7 @@ namespace utils {
         int _num_extra_pointers;  // number of extra pointers per argument type
         bool _progressive; // optional for synthesis only (default: false)
         std::string _output_file;  // optional for synthesis only (default: "")
+        bool _verbose; // optional verbose output
 
         /// Constant argument types (requires C++17)
         inline static const std::string _unrecognized_token = ""; // default value for unrecognized tokens
@@ -463,6 +492,9 @@ namespace utils {
         inline static const std::string _output_file_type = "--output-file";
         inline static const std::string _output_file_stype = "-o"; // short type
         inline static const std::string _output_file_ntype = "output_file"; // normalized type
+        inline static const std::string _verbosity_type = "--verbosity";
+        inline static const std::string _verbosity_stype = "-v"; // short type
+        inline static const std::string _verbosity_ntype = "verbosity"; // normalized type
 
         /// Constant argument values (requires C++17)
         inline static const std::set<std::string> _valid_modes = {"synthesis", "validation-prog", "validation-cpp"};
