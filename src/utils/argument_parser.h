@@ -119,11 +119,11 @@ namespace utils {
                     " INFINITE_DETECTION   available in \"validation-prog\" mode;"
                     " detects duplicate states in the program validation;"
                     " type: boolean (True, False; true, false; 1, 0);"
-                    " default: false\n\n"
+                    " default: false\n"
                     "  " + _progressive_stype + ", " + _progressive_type + " PROGRESSIVE  available in \"synthesis\" mode;"
                     " activates input instances progressively, where tentative solutions fails; "
                     " type: boolean (True, False; true, false; 1, 0);"
-                    " default: false\n\n"
+                    " default: false\n"
                     "  " + _verbosity_stype + ", " + _verbosity_type + " for verbose output; type: boolean"
                     " (True, False; true, false; 1, 0); default: false\n\n"
                     "usage examples:\n"
@@ -362,7 +362,7 @@ namespace utils {
             auto it = _valid_boolean.find(str_verbosity);
             if (it == _valid_boolean.end())
                 helper("Expected boolean value for verbose argument but " + str_verbosity + " found.");
-            _infinite_detection = it->second;
+            _verbose = it->second;
         }
 
         [[nodiscard]] std::string get_mode() const {
