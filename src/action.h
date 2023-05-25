@@ -237,6 +237,17 @@ public:
 		}
 		return ret;
 	}
+
+    [[nodiscard]] virtual std::string to_pddl_grounded() const{
+        auto pddl_grounded = std::string("(") + _name;
+        if(not _pointer_parameters.empty()){
+            // Action grounded over pointer parameters
+            for (const auto &ptr_param: _pointer_parameters)
+                pddl_grounded += " " + ptr_param->get_object()->get_name();
+        }
+        pddl_grounded += ")";
+        return pddl_grounded;
+    }
 	
 protected:
     std::string _name;

@@ -193,8 +193,13 @@ public:
         return ptr_assigned;
     }
 
-    std::vector< std::unique_ptr<ProgramState> > run(GeneralizedPlanningProblem *gpp){
+    std::vector< std::unique_ptr<ProgramState> > run(GeneralizedPlanningProblem *gpp,
+                                                     bool save_pddl_plans = false){
         reset_performance_variables();
+        if(save_pddl_plans){
+            _pddl_plans.clear();
+            _pddl_plans.resize(gpp->get_num_instances()+1);
+        }
 
         auto actions_theory = gpp->is_actions_theory();
         auto infinite_detection = gpp->get_infinite_detection();
@@ -268,7 +273,15 @@ public:
                 line = ps->get_line();
                 auto ins_type = _instructions[line]->get_type();
                 if( ins_type == ActionType::Math ) _num_of_math_planning_actions++;
-                else if(ins_type == ActionType::Memory ) _num_of_mem_planning_actions++;
+                else if(ins_type == ActionType::Memory ) {
+                    _num_of_mem_planning_actions++;
+                    // Memory planning actions are saved in PDDL plans
+                    if(save_pddl_plans) {
+                        auto act = dynamic_cast<instructions::PlanningAction*>(_instructions[line]);
+                        if(act and act->is_applicable(ins, ps))
+                            _pddl_plans[ins->get_instance_id()].emplace_back(act->get_action()->to_pddl_grounded());
+                    }
+                }
 
 				// Applying current instruction
                 //std::cout << _instructions[line]->to_string(false) << "\n";
@@ -493,6 +506,11 @@ public:
         return _failed_instance_idx;
     }
 
+    [[nodiscard]] vec_str_t get_plan(size_t instance_id) const{
+        assert(instance_id < _pddl_plans.size());
+        return _pddl_plans[instance_id];
+    }
+
     [[nodiscard]] std::string to_string(bool full_info) const{
         std::string ret;
         for(size_t line = 0; line < _instructions.size(); line++ ){
@@ -513,6 +531,9 @@ private:
     long long _num_of_math_planning_actions;
     long long _num_of_mem_planning_actions;
     long long _failed_instance_idx;
+
+    /// PDDL plans
+    std::vector<vec_str_t> _pddl_plans;
 
     /// Landmarks data
     //std::vector< std::shared_ptr<landmarks::LandmarkGraph> > _landmark_graphs;  // accessible from gpp
