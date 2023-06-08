@@ -25,18 +25,19 @@ def translate_domain(tarski_problem, file_name, applied_pddl_action=""):
 			str_aux += ")\n"
 			str_out += str_aux.replace(",)", ")")
 
-	for act_name in list(tarski_problem.actions):
-		action = tarski_problem.get_action(act_name)
-		str_out += "action_"+act_name.lower() + "("
+	if applied_pddl_action != "":
+		for act_name in list(tarski_problem.actions):
+			action = tarski_problem.get_action(act_name)
+			str_out += "action_"+act_name.lower() + "("
 
-		str_aux = ""
-		for p in action.parameters:
-			str_aux += str(p) + ":" + p.sort.name + ","
+			str_aux = ""
+			for p in action.parameters:
+				str_aux += str(p) + ":" + p.sort.name + ","
 
-		str_aux += ")\n"
-		str_out += str_aux.replace(",)", ")")
+			str_aux += ")\n"
+			str_out += str_aux.replace(",)", ")")
 
-	if applied_pddl_action == "":
+	else:
 		str_out += "\n[ACTIONS]:"
 		for act_name in list(tarski_problem.actions):
 			action = tarski_problem.get_action(act_name)
