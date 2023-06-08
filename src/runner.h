@@ -60,6 +60,8 @@ namespace runner{
                                  std::to_string(engine->get_generalized_planning_problem()->get_num_instances()));
         stats_info->add_info_msg("Expanded: " + std::to_string(engine->get_expanded()));
         stats_info->add_info_msg("Evaluated: " + std::to_string(engine->get_evaluated()));
+        stats_info->add_info_msg("Total plan costs: " + std::to_string(resulting_node->get_program()->get_total_plan_costs()));
+        stats_info->add_info_msg("Total number of instructions: " + std::to_string(resulting_node->get_program()->get_num_of_steps()));
         stats_info->timers_info("Search time:", "engine", "search");
         stats_info->timers_info("Total time:", "start", "search");
         if(resulting_node != nullptr ) stats_info->add_info_msg("Program file: " + dest_file_name + ".prog");

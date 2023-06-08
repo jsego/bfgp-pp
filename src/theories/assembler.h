@@ -30,7 +30,7 @@ namespace theory {
             /// 2.a Pointer modifiers
             ram->inc_ptr(gd);
             ram->dec_ptr(gd);
-            ram->clear_ptr(gd);
+            //ram->clear_ptr(gd); // ToDo: test whether clear should be included or not
             ram->set_ptr(gd);
             /// 2.b Pointer and Register comparison
             ram->cmp_ptrs(gd);

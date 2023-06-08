@@ -48,6 +48,7 @@ public:
 
     void reset_performance_variables(){
         _num_of_steps = 0;
+        _total_plan_costs = 0;
         _num_of_math_planning_actions = 0;
         _num_of_mem_planning_actions = 0;
         _failed_instance_idx = -1;
@@ -276,10 +277,12 @@ public:
                 else if(ins_type == ActionType::Memory ) {
                     _num_of_mem_planning_actions++;
                     // Memory planning actions are saved in PDDL plans
-                    if(save_pddl_plans) {
-                        auto act = dynamic_cast<instructions::PlanningAction*>(_instructions[line]);
-                        if(act and act->is_applicable(ins, ps))
+                    auto act = dynamic_cast<instructions::PlanningAction*>(_instructions[line]);
+                    if(act and act->is_applicable(ins, ps)) {
+                        _total_plan_costs++;
+                        if (save_pddl_plans) {
                             _pddl_plans[ins->get_instance_id()].emplace_back(act->get_action()->to_pddl_grounded());
+                        }
                     }
                 }
 
@@ -501,6 +504,11 @@ public:
         return _num_of_mem_planning_actions;
     }
 
+    [[nodiscard]] long long get_total_plan_costs() const{
+        /// Count the number of applicable "memory" actions during the program execution
+        return _total_plan_costs;
+    }
+
     [[nodiscard]] long long get_failed_instance_idx() const{
         /// Returns the idx of the instance that made the program run to fail
         return _failed_instance_idx;
@@ -530,6 +538,7 @@ private:
 	long long _num_of_steps;
     long long _num_of_math_planning_actions;
     long long _num_of_mem_planning_actions;
+    long long _total_plan_costs;
     long long _failed_instance_idx;
 
     /// PDDL plans
