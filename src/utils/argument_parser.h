@@ -96,7 +96,7 @@ namespace utils {
                                                                  " it loads a theory of instructions that builds the program grammar;"
                                                                  " default: cpp\n"
                                                                  "  " + _eval_func_stype + ", " + _eval_func_type +
-                    " [{lc, ilc, ed, mnl, mll, llc}]   only available in \"synthesis\" mode; "
+                    " [{lc, ilc, ed, mnl, mll, llc, ac, astar, wastar}]   only available in \"synthesis\" mode; "
                     "list of functions to evaluate nodes in the search; "
                     "default: [ed, ilc]\n"
                     "      lc (loop counter): minimize the number of loops in the program\n"
@@ -113,6 +113,9 @@ namespace utils {
                     "      llc (loop line counter): maximize the sum of all loop sizes in the program\n"
                     "      lmc (landmark counter): count the number of unachieved landmarks during program execution\n"
                     "      mi (max ifs): maximize the number of IF instructions\n"
+                    "      ac (accumulated cost): sum of all applied instructions\n"
+                    "      astar (ed+ac): euclidean plus accumulated cost in an A* fashion\n"
+                    "      wastar (5*ed+ac): weighted euclidean plus accumulated cost in an WA* fashion, default w=5\n"
                     "  " + _program_stype + ", " + _program_type +
                     " PROGRAM_FILE.prog   required in \"validation-*\" modes\n"
                     "  " + _infinite_detection_stype + ", " + _infinite_detection_type +
@@ -499,8 +502,9 @@ namespace utils {
         /// Constant argument values (requires C++17)
         inline static const std::set<std::string> _valid_modes = {"synthesis", "validation-prog", "validation-cpp"};
         inline static const std::set<std::string> _valid_evaluation_functions = {"lc", "ed", "hd", "chd", "jd", "nei",
-                                                                                 "mri", "mnl", "mll", "llc", "ilc", "lmc",
-                                                                                 "hmax", "hadd", "mi", "cwed", "ac", "dll"};
+                                                                                 "mri", "mnl", "mll", "llc", "ilc",
+                                                                                 "lmc", "hmax", "hadd", "mi", "cwed",
+                                                                                 "ac", "dll", "astar", "wastar"};
         inline static const std::set<std::string> _valid_theories = {"assembler", "cpp", "bitvec", "actions_strips",
                                                                      "actions_adl", "actions_cell", "actions_ram"};
         inline static const std::map<std::string, bool> _valid_boolean = {{"True", true},

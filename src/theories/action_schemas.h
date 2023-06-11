@@ -79,7 +79,7 @@ namespace theory{
                                                               Program *prog,
                                                               Instance *instance){
             auto ps = prog->make_program_state(gd, instance->get_initial_state());
-            prog->reset_program_state(ps.get(), instance);
+            prog->reset_program_state(ps.get(), instance, true);
             auto res = instruction->apply(instance, ps.get());
             prog->update_flags(ps.get(), res);
             std::vector<value_t> flag_res;

@@ -32,6 +32,8 @@
 #include "evaluation_functions/max_ifs.h"
 #include "evaluation_functions/accumulated_cost.h"
 #include "evaluation_functions/distance_to_last_line.h"
+#include "evaluation_functions/a_star.h"
+#include "evaluation_functions/wa_star.h"
 
 #include "theories/assembler.h"
 #include "theories/c_plus_plus.h"
@@ -195,6 +197,8 @@ namespace factories {
             else if(ef_name == "mi") engine->add_evaluation_function(std::make_unique<evaluation_functions::MaxIfs>());
             else if(ef_name == "ac") engine->add_evaluation_function(std::make_unique<evaluation_functions::AccumulatedCost>());
             else if(ef_name == "dll") engine->add_evaluation_function(std::make_unique<evaluation_functions::DistanceToLastLine>());
+            else if(ef_name == "astar") engine->add_evaluation_function(std::make_unique<evaluation_functions::AStar>());
+            else if(ef_name == "wastar") engine->add_evaluation_function(std::make_unique<evaluation_functions::WAStar>());
             else {
                 // Redundant, this should never happen, it is already in the arg parser
                 utils::system_error("evaluation function " + ef_name + " is unknown.",ERROR_UNKNOWN_EVALUATION_FUNCTION);

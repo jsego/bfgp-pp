@@ -39,7 +39,7 @@ namespace runner{
 
         auto dest_folder_file =
                 utils::create_experiments_file_subdirectory(
-                        engine->get_generalized_planning_problem()->get_generalized_domain()->get_domain()->get_name(),
+                        //engine->get_generalized_planning_problem()->get_generalized_domain()->get_domain()->get_name(),
                         arg_parser->get_problem_folder(),
                         arg_parser->get_program_lines(),
                         arg_parser->get_evaluation_function_names());
@@ -60,8 +60,12 @@ namespace runner{
                                  std::to_string(engine->get_generalized_planning_problem()->get_num_instances()));
         stats_info->add_info_msg("Expanded: " + std::to_string(engine->get_expanded()));
         stats_info->add_info_msg("Evaluated: " + std::to_string(engine->get_evaluated()));
-        stats_info->add_info_msg("Total plan costs: " + std::to_string(resulting_node->get_program()->get_total_plan_costs()));
-        stats_info->add_info_msg("Total number of instructions: " + std::to_string(resulting_node->get_program()->get_num_of_steps()));
+        if(resulting_node != nullptr) {
+            stats_info->add_info_msg(
+                    "Total plan costs: " + std::to_string(resulting_node->get_program()->get_total_plan_costs()));
+            stats_info->add_info_msg("Total number of instructions: " +
+                                     std::to_string(resulting_node->get_program()->get_num_of_steps()));
+        }
         stats_info->timers_info("Search time:", "engine", "search");
         stats_info->timers_info("Total time:", "start", "search");
         if(resulting_node != nullptr ) stats_info->add_info_msg("Program file: " + dest_file_name + ".prog");
@@ -173,7 +177,7 @@ namespace runner{
                      std::unique_ptr<GeneralizedPlanningProblem> gpp,
                      std::unique_ptr<StatsInfo> stats_info){
         auto dest_folder_file =
-                utils::create_experiments_file_subdirectory(gpp->get_generalized_domain()->get_domain()->get_name(),
+                utils::create_experiments_file_subdirectory(//gpp->get_generalized_domain()->get_domain()->get_name(),
                                                             arg_parser->get_problem_folder(),
                                                             arg_parser->get_program_lines(),
                                                             arg_parser->get_evaluation_function_names());

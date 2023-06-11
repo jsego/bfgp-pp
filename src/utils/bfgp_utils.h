@@ -79,21 +79,21 @@ namespace utils{
 
     /// Get the list of subfolders to be created for the experiment
     std::pair<std::string,std::string> create_experiments_file_subdirectory(
-            std::string out_file,
+            //std::string out_file,
             const std::string& orig_problem_folder,
             int program_lines,
             const vec_str_t &evaluation_functions){
         // Setting up output folder and file
         std::string out_folder = "experiments/"; // set the root output folder to experiments/
-        auto problem_subfolders = split(orig_problem_folder, "/");
+        auto problem_subfolders = split(orig_problem_folder, "/"); // last subfolder expected to be an empty string
         if(!problem_subfolders.empty()){
             // Add all intermediate folders
-            for(size_t idx=1; idx<problem_subfolders.size(); idx++)
+            for(size_t idx=1; idx+2<problem_subfolders.size(); idx++)
                 out_folder += problem_subfolders[idx] + "/";
-            // The last folder is used as the out_file name (some domain names are the same, even if problems are different)
-            //out_file = problem_subfolders[problem_subfolders.size() - 1];
         }
         // Add settings info to the out_file name, e.g. program lines and evaluation functions
+        assert(problem_subfolders.size()>1u);  // At least expected "domains/[...]/subfolder/" for a problem
+        std::string out_file = problem_subfolders[problem_subfolders.size()-2];
         out_file += "_" + std::to_string(program_lines);
         for(const auto &efn : evaluation_functions)
             out_file += "_" + efn;

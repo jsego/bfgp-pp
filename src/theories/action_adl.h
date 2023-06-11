@@ -346,7 +346,7 @@ namespace theory{
                 for(auto instance_id = 0u; instance_id < gpp->get_num_instances(); instance_id++ ){
                     auto instance = gpp->get_instance(instance_id);
                     auto ps = p->make_program_state(gd, instance->get_initial_state());
-                    auto v_ptr_assignment = p->reset_program_state(ps.get(), instance);
+                    auto v_ptr_assignment = p->reset_program_state(ps.get(), instance, true);
                     assert(ins_for_ptr_id < v_ptr_assignment.size());
                     if(v_ptr_assignment[ins_for_ptr_id]) return false; // Return false if the pointer has been used
                 }
@@ -358,7 +358,7 @@ namespace theory{
             if(ins_test) {
                 auto instance = gpp->get_instance(0u); // The same pointers should be initially used in every instance
                 auto ps = p->make_program_state(gd, instance->get_initial_state());
-                auto ptr_used = p->reset_program_state(ps.get(), instance);
+                auto ptr_used = p->reset_program_state(ps.get(), instance, true);
                 /// 3.a Allow SETs only on used pointers so far
                 for (size_t line = 0u; line < program_line; line++) {
                     auto prev_ins_for = dynamic_cast<instructions::For *>(p->get_instruction(line));
@@ -389,7 +389,7 @@ namespace theory{
             if(ins_regset){
                 auto instance = gpp->get_instance(0u); // The same pointers should be initially used in every instance
                 auto ps = p->make_program_state(gd, instance->get_initial_state());
-                auto ptr_used = p->reset_program_state(ps.get(), instance);
+                auto ptr_used = p->reset_program_state(ps.get(), instance, true);
                 /// 3.a Allow SETs only on used pointers so far
                 for(size_t line=0u; line < program_line; line++){
                     auto prev_ins_for = dynamic_cast<instructions::For*>(p->get_instruction(line));

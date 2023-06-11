@@ -150,7 +150,7 @@ public:
         return ps;
     }
 
-    static std::vector<bool> reset_program_state(ProgramState *ps, Instance *ins){
+    static std::vector<bool> reset_program_state(ProgramState *ps, Instance *ins, bool is_action_theory=false){
         /// Apply the default behavior (all pointers to 0, and state to init)
         /// and returns the pointers assigned to specific objects when "action_X" is defined in INIT
         ps->set_state(ins->get_initial_state()->copy()); // set the planning state to s
@@ -163,32 +163,34 @@ public:
         /// in this case there must be only one action.
         auto ptrs = ps->get_pointers();
         std::vector<bool> ptr_assigned(ptrs.size(), false);
-        for(const auto& fact : ins->get_initial_state()->get_facts()){
-            auto act_name = fact->get_function()->get_name();
-            if(act_name.size() > 7u and act_name.substr(0,7)=="action_"){
-                auto objs = fact->get_objects();
-                for(const auto& o : objs){
-                    // Set for the current Object* o, its type obj_t and index obj_idx
-                    auto obj_t = o->get_type();
-                    auto all_objs_t = ins->get_typed_objects(obj_t->get_name());
-                    size_t obj_idx = 0u;
-                    // ToDo: implement a better lookup function for obj_idx
-                    for(obj_idx=0u; obj_idx < all_objs_t.size(); ++obj_idx){
-                        if(all_objs_t[obj_idx] == o) break;
-                    }
-                    assert(obj_idx < all_objs_t.size());
+        if(is_action_theory) {
+            for (const auto &fact: ins->get_initial_state()->get_facts()) {
+                auto act_name = fact->get_function()->get_name();
+                if (act_name.size() > 7u and act_name.substr(0, 7) == "action_") {
+                    auto objs = fact->get_objects();
+                    for (const auto &o: objs) {
+                        // Set for the current Object* o, its type obj_t and index obj_idx
+                        auto obj_t = o->get_type();
+                        auto all_objs_t = ins->get_typed_objects(obj_t->get_name());
+                        size_t obj_idx = 0u;
+                        // ToDo: implement a better lookup function for obj_idx
+                        for (obj_idx = 0u; obj_idx < all_objs_t.size(); ++obj_idx) {
+                            if (all_objs_t[obj_idx] == o) break;
+                        }
+                        assert(obj_idx < all_objs_t.size());
 
-                    // Assign the object to a free pointer of its type
-                    for(size_t ptr_idx{0}; ptr_idx < ptrs.size(); ++ptr_idx){
-                        if(ptr_assigned[ptr_idx]) continue;
-                        if(obj_t == ptrs[ptr_idx]->get_type()){
-                            ptr_assigned[ptr_idx] = true;
-                            update_pointer(ins, ptrs[ptr_idx], obj_idx);
-                            break;
+                        // Assign the object to a free pointer of its type
+                        for (size_t ptr_idx{0}; ptr_idx < ptrs.size(); ++ptr_idx) {
+                            if (ptr_assigned[ptr_idx]) continue;
+                            if (obj_t == ptrs[ptr_idx]->get_type()) {
+                                ptr_assigned[ptr_idx] = true;
+                                update_pointer(ins, ptrs[ptr_idx], obj_idx);
+                                break;
+                            }
                         }
                     }
+                    return ptr_assigned;
                 }
-                return ptr_assigned;
             }
         }
         return ptr_assigned;
@@ -207,7 +209,6 @@ public:
         //auto use_landmarks = gpp->get_use_landmarks();// ToDo: evaluation function dependant - maybe some program specialization would work
 		//auto num_instances = gpp->get_num_instances();
         auto active_instance_idxs = gpp->get_active_instance_idxs();
-		auto funcs = gpp->get_generalized_domain()->get_domain()->get_functions();
 
 		// One program state per instance
         std::vector< std::unique_ptr<ProgramState> > pss;
