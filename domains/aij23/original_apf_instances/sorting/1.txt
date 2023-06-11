@@ -1,0 +1,14 @@
+[INSTANCE]: sorting-2
+[DOMAIN]: SORTING
+
+[OBJECTS]:
+p0:object
+p1:object
+
+[INIT]:
+(vector(p0)=2)
+(vector(p1)=1)
+
+[GOAL]:
+(vector(p0)=1)
+(vector(p1)=2)

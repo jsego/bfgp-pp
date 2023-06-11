@@ -1,0 +1,32 @@
+[INSTANCE]: gripper-7
+[DOMAIN]: Gripper
+
+[OBJECTS]:
+ball1:ball
+ball2:ball
+ball3:ball
+ball4:ball
+ball5:ball
+ball6:ball
+ball7:ball
+
+[INIT]:
+(at_robby(roomA)=1)
+(at(ball1,roomA)=1)
+(at(ball2,roomA)=1)
+(at(ball3,roomA)=1)
+(at(ball4,roomA)=1)
+(at(ball5,roomA)=1)
+(at(ball6,roomA)=1)
+(at(ball7,roomA)=1)
+(free(left)=1)
+(free(right)=1)
+
+[GOAL]:
+(at(ball1,roomB)=1)
+(at(ball2,roomB)=1)
+(at(ball3,roomB)=1)
+(at(ball4,roomB)=1)
+(at(ball5,roomB)=1)
+(at(ball6,roomB)=1)
+(at(ball7,roomB)=1)
