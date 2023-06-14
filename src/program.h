@@ -52,6 +52,7 @@ public:
         _num_of_math_planning_actions = 0;
         _num_of_mem_planning_actions = 0;
         _failed_instance_idx = -1;
+        _pc_max = 0;
     }
 
     [[nodiscard]] std::vector<instructions::Instruction*> get_instructions() const{
@@ -73,15 +74,19 @@ public:
 		return _instructions.size();
 	}
 	
-	[[nodiscard]] bool is_halting_condition(ProgramState* ps, int &error ) const{
+	[[nodiscard]] bool is_halting_condition(ProgramState* ps, int &error ){
 		auto line = ps->get_line();
 		// EMPTY line is a halting condition (no transition defined)
-        if( _instructions[line] == nullptr ) return true;
+        if( _instructions[line] == nullptr ) {
+            _pc_max = std::max(_pc_max, line);
+            return true;
+        }
         // Either True or False evaluation of End instructions is a halting condition
         return nullptr != dynamic_cast<instructions::End*>(_instructions[line]);
     }
 	
 	bool is_goal(ProgramState* ps, Instance* ins, int &error ) const{
+        // std::cout << "Instance#" << ins->get_instance_id() << ":\n" << ps->to_string() << "\n";
 		auto line = ps->get_line();
         auto end = dynamic_cast<instructions::End*>( _instructions[line] );
         if( end == nullptr ) return false;
@@ -111,6 +116,7 @@ public:
 
     // ToDo: CPP theory dependant - update from a settings class
     [[nodiscard]] bool is_terminating(ProgramState* ps, std::set<std::string > &visited) const{
+    //[[nodiscard]] bool is_terminating(ProgramState* ps, std::unordered_set<size_t> &visited) const{
         /// Returns whether the current program is terminating based on repeated states in backward loops
         auto line = ps->get_line();
         // cpp theory
@@ -123,6 +129,12 @@ public:
             if(visited.find(ps_str) != visited.end() )
                 return false; // Infinite loop detected
             visited.insert(ps_str);
+            /*
+            auto ps_hash = ps->hash();
+            if(visited.find(ps_hash) != visited.end())
+                return false; // Infinite loop detected
+            visited.insert(ps_hash);
+             */
         }
         return true;
     }
@@ -150,54 +162,57 @@ public:
         return ps;
     }
 
+    static void reset_pointers(ProgramState *ps, Instance *ins){
+        for(const auto& ptr : ps->get_pointers()) {
+            update_pointer(ins, ptr, 0u);
+        }
+    }
+
     static std::vector<bool> reset_program_state(ProgramState *ps, Instance *ins, bool is_action_theory=false){
         /// Apply the default behavior (all pointers to 0, and state to init)
         /// and returns the pointers assigned to specific objects when "action_X" is defined in INIT
         ps->set_state(ins->get_initial_state()->copy()); // set the planning state to s
-        for(const auto& ptr : ps->get_pointers()) {
-            update_pointer(ins, ptr, 0u);
-        }
+        reset_pointers(ps, ins);
 
         // ToDo: program specialization for ActionSchemas (override the reset_program_state)
         /// If the theory is ActionSchemas, reset pointers to the corresponding action_* objects,
         /// in this case there must be only one action.
         auto ptrs = ps->get_pointers();
         std::vector<bool> ptr_assigned(ptrs.size(), false);
-        if(is_action_theory) {
-            for (const auto &fact: ins->get_initial_state()->get_facts()) {
-                auto act_name = fact->get_function()->get_name();
-                if (act_name.size() > 7u and act_name.substr(0, 7) == "action_") {
-                    auto objs = fact->get_objects();
-                    for (const auto &o: objs) {
-                        // Set for the current Object* o, its type obj_t and index obj_idx
-                        auto obj_t = o->get_type();
-                        auto all_objs_t = ins->get_typed_objects(obj_t->get_name());
-                        size_t obj_idx = 0u;
-                        // ToDo: implement a better lookup function for obj_idx
-                        for (obj_idx = 0u; obj_idx < all_objs_t.size(); ++obj_idx) {
-                            if (all_objs_t[obj_idx] == o) break;
-                        }
-                        assert(obj_idx < all_objs_t.size());
 
-                        // Assign the object to a free pointer of its type
-                        for (size_t ptr_idx{0}; ptr_idx < ptrs.size(); ++ptr_idx) {
-                            if (ptr_assigned[ptr_idx]) continue;
-                            if (obj_t == ptrs[ptr_idx]->get_type()) {
-                                ptr_assigned[ptr_idx] = true;
-                                update_pointer(ins, ptrs[ptr_idx], obj_idx);
-                                break;
-                            }
+        for (const auto &fact: ins->get_initial_state()->get_facts()) {
+            auto act_name = fact->get_function()->get_name();
+            if (act_name.size() > 7u and act_name.substr(0, 7) == "action_") {
+                auto objs = fact->get_objects();
+                for (const auto &o: objs) {
+                    // Set for the current Object* o, its type obj_t and index obj_idx
+                    auto obj_t = o->get_type();
+                    auto all_objs_t = ins->get_typed_objects(obj_t->get_name());
+                    size_t obj_idx = 0u;
+                    // ToDo: implement a better lookup function for obj_idx
+                    for (obj_idx = 0u; obj_idx < all_objs_t.size(); ++obj_idx) {
+                        if (all_objs_t[obj_idx] == o) break;
+                    }
+                    assert(obj_idx < all_objs_t.size());
+
+                    // Assign the object to a free pointer of its type
+                    for (size_t ptr_idx{0}; ptr_idx < ptrs.size(); ++ptr_idx) {
+                        if (ptr_assigned[ptr_idx]) continue;
+                        if (obj_t == ptrs[ptr_idx]->get_type()) {
+                            ptr_assigned[ptr_idx] = true;
+                            update_pointer(ins, ptrs[ptr_idx], obj_idx);
+                            break;
                         }
                     }
-                    return ptr_assigned;
                 }
+                return ptr_assigned;
             }
         }
+
         return ptr_assigned;
     }
 
-    std::vector< std::unique_ptr<ProgramState> > run(GeneralizedPlanningProblem *gpp,
-                                                     bool save_pddl_plans = false){
+    std::vector<ProgramState*> run(GeneralizedPlanningProblem *gpp, bool save_pddl_plans = false){
         reset_performance_variables();
         if(save_pddl_plans){
             _pddl_plans.clear();
@@ -211,10 +226,10 @@ public:
         auto active_instance_idxs = gpp->get_active_instance_idxs();
 
 		// One program state per instance
-        std::vector< std::unique_ptr<ProgramState> > pss;
+        clear_program_states();
         auto gd = gpp->get_generalized_domain();
         for(const auto& idx : active_instance_idxs){
-            pss.emplace_back(make_program_state(gd, gpp->get_instance(idx)->get_initial_state()));
+            _pss.emplace_back(make_program_state(gd, gpp->get_instance(idx)->get_initial_state()));
         }
 
          int errors = 0;
@@ -230,8 +245,9 @@ public:
             //std::cout << "******** INSTANCE #" << (id+1) << " ********\n";
 			// Initialize local initial state
 			auto ins = gpp->get_instance(idx);
-            auto ps = pss[active_instance_local_idx++].get(); // default ProgramState values
-            reset_program_state(ps, ins);
+            auto ps = _pss[active_instance_local_idx++].get(); // default ProgramState values
+            if(actions_theory) reset_program_state(ps, ins);
+            else reset_pointers(ps, ins);
             auto line = ps->get_line();
 
             /// Copy the pre_state in actions_theory
@@ -262,6 +278,7 @@ public:
 			// For detecting infinite loops (ToDo: it can be enhanced with a hash or bigint identifier)
             //std::set< std::unique_ptr<ProgramState>, ProgramStateComparer > visited;
             std::set< std::string > visited; // saving program states as strings
+            //std::unordered_set< size_t > visited; // saving program states as size_t hash's
 			int error = 0;
 
 			while( not is_halting_condition(ps, error) ){
@@ -288,8 +305,8 @@ public:
                 }
 
 				// Applying current instruction
-                //std::cout << _instructions[line]->to_string(false) << "\n";
-                //std::cout << "Is applicable? " << _instructions[line]->is_applicable(ins, ps) << "\n";
+                // std::cout << _instructions[line]->to_string(false) << "\n";
+                // std::cout << "Is applicable? " << _instructions[line]->is_applicable(ins, ps) << "\n";
                 value_t res{0u};
                 auto ins_reg_test = dynamic_cast<instructions::RegisterTest*>(_instructions[line]);
                 auto ins_reg_assign = dynamic_cast<instructions::RegisterAssign*>(_instructions[line]);
@@ -311,7 +328,7 @@ public:
                 // Mathematical planning actions update zero and carry flags
                 if(ins_type == ActionType::Math ) update_flags(ps, res);
 
-                //std::cout << ps->to_string() << "\n\n";
+                // std::cout << ps->to_string() << "\n\n";
 
                 // ToDo: evaluation function dependant - maybe some program specialization would work
                 /*if(use_landmarks){
@@ -380,7 +397,7 @@ public:
 		}
 
         if( errors ) return {};
-		return pss;
+		return get_program_states();
 	}
 
     /*
@@ -515,6 +532,10 @@ public:
         return _failed_instance_idx;
     }
 
+    [[nodiscard]] size_t get_pc_max() const{
+        return _pc_max;
+    }
+
     [[nodiscard]] vec_str_t get_plan(size_t instance_id) const{
         assert(instance_id < _pddl_plans.size());
         return _pddl_plans[instance_id];
@@ -530,6 +551,18 @@ public:
         }
         return ret;
     }
+
+    void clear_program_states(){
+        _pss.clear();
+    }
+
+    [[nodiscard]] std::vector<ProgramState*> get_program_states() const{
+        auto pss = std::vector<ProgramState*>();
+        pss.reserve(_pss.size());
+        for(const auto& ps : _pss)
+            pss.emplace_back(ps.get());
+        return pss;
+    }
 	
 private:
     /// Program instructions
@@ -544,6 +577,10 @@ private:
 
     /// PDDL plans
     std::vector<vec_str_t> _pddl_plans;
+
+    // Temporal resulting data, e.g., program states, pc_max (max line reached with empty instruction)
+    size_t _pc_max;
+    std::vector< std::unique_ptr<ProgramState> > _pss;
 
     /// Landmarks data
     //std::vector< std::shared_ptr<landmarks::LandmarkGraph> > _landmark_graphs;  // accessible from gpp

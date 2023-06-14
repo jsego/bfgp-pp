@@ -60,7 +60,7 @@ namespace factories {
 
         // Parse the existing domain
         auto dom = std::make_unique<Domain>();
-        if(not parser::Parser::parse_domain(dom.get(), problem_folder+"domain.txt"))
+        if(not parser::Parser::parse_domain(dom.get(), problem_folder+"domain.txt", arg_parser))
             utils::system_error("while parsing domain.txt.", ERROR_PARSING_DOMAIN);
         return dom;
     }
@@ -138,7 +138,7 @@ namespace factories {
         // Generating the GP problem
         auto gpp = std::make_unique<GeneralizedPlanningProblem>(
                 std::move(generalized_domain),
-                ((arg_parser->get_theory_name() == "assembler") or arg_parser->get_infinite_detection()),
+                arg_parser->get_infinite_detection(),
                 arg_parser->get_problem_folder());
 
         std::cout << "[INFO] Infinite detection: " << (gpp->get_infinite_detection()?"activated":"deactivated") << "\n";
@@ -152,7 +152,7 @@ namespace factories {
             if (!std::filesystem::exists(input_instance)) break;
 
             auto ins = std::make_unique<Instance>("default", i, dom);
-            parser::Parser::parse_instance(ins.get(), input_instance);
+            parser::Parser::parse_instance(ins.get(), input_instance, arg_parser);
             // If some critical error occurs, it is thrown during the parsing
             gpp->add_instance(std::move(ins));
         }

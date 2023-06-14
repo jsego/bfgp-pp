@@ -16,7 +16,8 @@ namespace evaluation_functions{
 
         // Computing the h_add heuristic per node in the search
         value_t compute(Program *p, GeneralizedPlanningProblem *gpp) override {
-            auto vps = p->run( gpp );
+            //auto vps = p->run( gpp );
+            auto vps = p->get_program_states();
             // Error when running the program over active instances
             if (vps.empty()) return INF;
             value_t res = 0;

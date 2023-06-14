@@ -79,12 +79,13 @@ namespace runner{
     void run_program(Program *prog,
                      GeneralizedPlanningProblem *gpp,
                      StatsInfo *stats_info,
+                     std::string dest_file_name = "",
                      bool save_pddl_plans = false){
         auto vps = prog->run( gpp, save_pddl_plans );
         // ToDo: print pddl_plans to files here
         if(save_pddl_plans){
             for(size_t instance_id = 1; instance_id <= gpp->get_num_instances(); instance_id++){
-                std::ofstream ofs("plan." + std::to_string(instance_id));
+                std::ofstream ofs(dest_file_name + ".plan." + std::to_string(instance_id));
                 for(const auto& str_act : prog->get_plan(instance_id))
                     ofs << str_act << "\n";
                 ofs.close();
@@ -196,7 +197,7 @@ namespace runner{
 
         if(arg_parser->get_mode() == "validation-prog") {
             auto th_name = arg_parser->get_theory_name();
-            run_program(prog.get(), gpp.get(), stats_info.get(), true);
+            run_program(prog.get(), gpp.get(), stats_info.get(), dest_file_name, arg_parser->is_save_pddl_plans());
         }
         else if(arg_parser->get_mode() == "validation-cpp"){
             generate_cpp_code(gpp.get(), prog.get(), dest_folder_file.first, dest_folder_file.second, stats_info.get(), arg_parser.get());

@@ -18,7 +18,8 @@ namespace evaluation_functions {
         // Computing the hamming distance to goal after each execution.
         // This assumes that goals are equalities.
         value_t compute(Program *p, GeneralizedPlanningProblem *gpp) override {
-            auto vps = p->run( gpp );
+            //auto vps = p->run( gpp );
+            auto vps = p->get_program_states();
 
             // Error when running the program over active instances
             if (vps.empty()) return INF;

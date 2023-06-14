@@ -25,7 +25,7 @@ public:
     [[nodiscard]] virtual std::shared_ptr<Node> select_node() = 0;
 	
 	// Check if goal conditions hold in the current Node
-    [[nodiscard]] virtual bool is_goal(Node* node) = 0;
+    [[nodiscard]] virtual bool is_goal(Node* node, bool run_program=false) = 0;
 	
 	// Expand the current Node, adding all non-visited childs
 	virtual std::vector<std::shared_ptr<Node>> expand_node(Node* node) = 0;

@@ -60,18 +60,17 @@ namespace theory {
             // 2. Check that GOTO instructions can only be programmed after math instruction, and they
             // cannot jump to the same line or the next one
             auto ins_goto = dynamic_cast<instructions::Goto*>(new_ins);
+            auto prev_ins = (program_line>0?p->get_instruction(program_line-1): nullptr);
             if(ins_goto){
                 if(program_line == 0) return false;
-                auto prev_ins = p->get_instruction(program_line-1);
-                if(prev_ins->get_type() != ActionType::Math) return false;
+                if(prev_ins and prev_ins->get_type() != ActionType::Math) return false;
                 auto dest_line = ins_goto->get_destination_line();
                 if(dest_line == program_line or dest_line == program_line+1) return false;
             }
             // 3. Check if the instruction is not a GOTO, but the previous one is TEST or CMP (which forces the next one
             // to be a GOTO instruction)
-            else{
-                if(program_line>0 and is_conditional_name(p->get_instruction(program_line-1)->get_name(false)))
-                    return false;
+            else if(prev_ins and is_conditional_name(prev_ins->get_name(false))){
+                return false;
             }
 
             // 4. Check that only PlanningActions, GOTOs or ENDs can be programmed in line [n-2]
