@@ -95,9 +95,10 @@ namespace theory{
             auto ins_if = dynamic_cast<instructions::If*>(new_ins);
 
             /// 1.a if the previous instruction is CMP or TEST, the current instruction must be an IF
-            bool is_prev_cond = program_line>0 and
-                                is_conditional_name(p->get_instruction(program_line-1)->get_name(false));
-            if(ins_if == nullptr and is_prev_cond)
+            auto prev_ins = (program_line>0?p->get_instruction(program_line-1): nullptr);
+            //bool is_prev_cond = program_line>0 and
+            //                    is_conditional_name(p->get_instruction(program_line-1)->get_name(false));
+            if(ins_if == nullptr and prev_ins != nullptr and is_conditional_name(prev_ins->get_name(false)))
                 return false;
 
             if (ins_if) {
@@ -105,8 +106,9 @@ namespace theory{
                 if(program_line == 0) return false;
 
                 /// 1.c An IF must be programmed after a TEST or CMP instruction
-                auto prev_ins = p->get_instruction(program_line-1);
-                if(not is_conditional_name(prev_ins->get_name(false))) return false;
+                //auto prev_ins = p->get_instruction(program_line-1);
+                //if(not is_conditional_name(prev_ins->get_name(false))) return false;
+                if(prev_ins == nullptr or not is_conditional_name(prev_ins->get_name(false))) return false;
 
                 /// 1.d An IF must be a forward jump and size>1, i.e., destination line >= program line + 2
                 auto dest_line = ins_if->get_destination_line();
