@@ -1,4 +1,4 @@
-[INSTANCE]: corridor-6
+[INSTANCE]: corridor-16
 [DOMAIN]: CORRIDOR
 
 [OBJECTS]:
@@ -8,10 +8,20 @@ l3:object
 l4:object
 l5:object
 l6:object
+l7:object
+l8:object
+l9:object
+l10:object
+l11:object
+l12:object
+l13:object
+l14:object
+l15:object
+l16:object
 
 [INIT]:
-(at(l1)=1)
-(goal_at(l4)=1)
+(at(l2)=1)
+(goal_at(l7)=1)
 (adjacent(l1,l2)=1)
 (adjacent(l2,l1)=1)
 (adjacent(l2,l3)=1)
@@ -22,6 +32,26 @@ l6:object
 (adjacent(l5,l4)=1)
 (adjacent(l5,l6)=1)
 (adjacent(l6,l5)=1)
+(adjacent(l6,l7)=1)
+(adjacent(l7,l6)=1)
+(adjacent(l7,l8)=1)
+(adjacent(l8,l7)=1)
+(adjacent(l8,l9)=1)
+(adjacent(l9,l8)=1)
+(adjacent(l9,l10)=1)
+(adjacent(l10,l9)=1)
+(adjacent(l10,l11)=1)
+(adjacent(l11,l10)=1)
+(adjacent(l11,l12)=1)
+(adjacent(l12,l11)=1)
+(adjacent(l12,l13)=1)
+(adjacent(l13,l12)=1)
+(adjacent(l13,l14)=1)
+(adjacent(l14,l13)=1)
+(adjacent(l14,l15)=1)
+(adjacent(l15,l14)=1)
+(adjacent(l15,l16)=1)
+(adjacent(l16,l15)=1)
 
 [GOAL]:
-(at(l4)=1)
+(at(l7)=1)
