@@ -1,0 +1,9 @@
+[DOMAIN]: hanoi
+
+[TYPES]:
+
+[FUNCTIONS]:
+clear(?x0:object)
+on(?x1:object,?x2:object)
+smaller(?x3:object,?x4:object)
+action_move(?disc:object,?from:object,?to:object)

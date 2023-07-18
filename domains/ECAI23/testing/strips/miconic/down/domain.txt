@@ -1,0 +1,17 @@
+[DOMAIN]: miconic
+
+[TYPES]:
+
+[FUNCTIONS]:
+origin(?x0:object,?x1:object)
+floor(?x2:object)
+passenger(?x3:object)
+destin(?x4:object,?x5:object)
+above(?x6:object,?x7:object)
+boarded(?x8:object)
+served(?x9:object)
+lift_at(?x10:object)
+action_board(?f:object,?p:object)
+action_depart(?f:object,?p:object)
+action_up(?f1:object,?f2:object)
+action_down(?f1:object,?f2:object)

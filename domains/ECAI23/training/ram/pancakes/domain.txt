@@ -1,0 +1,9 @@
+[DOMAIN]: pancake_sorting
+
+[TYPES]: 
+
+[FUNCTIONS]:
+vector(?o:object)
+action_flip(?o:object)
+
+
