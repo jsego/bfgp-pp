@@ -1,0 +1,18 @@
+[INSTANCE]: gripper_1
+[DOMAIN]: gripper_strips
+
+[OBJECTS]:
+left:gripper
+right:gripper
+rooma:room
+roomb:room
+ball1:ball
+
+[INIT]:
+(at_robby(rooma)=1)
+(free(right)=1)
+(free(left)=1)
+(at(ball1,rooma)=1)
+
+[GOAL]:
+(at(ball1,roomb)=1)
