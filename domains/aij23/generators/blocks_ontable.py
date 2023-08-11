@@ -1,9 +1,7 @@
-#!/usr/bin/env python
 import sys
 import random
 import argparse
-# from tarski.io import PDDLReader
-
+from pddl_translator import translate_pddl_to_ram
 
 # ***************** #
 # Functions declarations
@@ -44,14 +42,14 @@ def get_goals(num_blocks):
 
 def generate_problem(name,nblocks):
     return f"(define (problem {name})\n" \
-           f"  (:domain BLOCKS)\n" \
+           f"  (:domain blocks_ontable)\n" \
            f"  (:objects {get_objects(nblocks)})\n" \
            f"  (:init {get_init(nblocks)})\n" \
            f"  (:goal {get_goals(nblocks)}))\n"
 
 def generate_domain():
     str_out = ""
-    str_out += "(define (domain BLOCKS)\n"
+    str_out += "(define (domain blocks_ontable)\n"
     str_out += " (:requirements :strips)\n"
     str_out += " (:predicates (on ?x ?y) (ontable ?x) (clear ?x) (handempty) (holding ?x))\n"
     str_out += "\n"
@@ -105,14 +103,12 @@ def main():
     parser = argparse.ArgumentParser(description="Blocks Ontable generator")
     parser.add_argument("-f", "--from_nth", type=int, required=True)
     parser.add_argument("-t", "--to_nth", type=int, required=True)
-    parser.add_argument("-e", "--extra_pointers", type=int, nargs='?', default=0, required=False)
     parser.add_argument("-s", "--step", type=int, nargs='?', default=1, required=False)
     parser.add_argument("-o", "--out_folder", type=str, required=True)
     args = parser.parse_args()
 
     from_nth = args.from_nth
     to_nth = args.to_nth
-    extra_pointers = args.extra_pointers
     step = args.step
     out_folder = args.out_folder
 
@@ -123,36 +119,25 @@ def main():
     vblocks = range(from_nth, to_nth+1)
 
     # DOMAIN
+    domain_name = f"{out_folder}/domain.pddl"
     str_domain = generate_domain()
-    f_domain = open(out_folder + "domain.pddl", "w")
-    f_domain.write(str_domain)
-    f_domain.close()
+    with open(domain_name, "w") as f_domain:
+        f_domain.write(str_domain)
 
     # INSTANCES
     random.seed(1007)
 
+    problem_id = 1
     num_of_same_complexity_problems = 1
     for i in range(from_nth, to_nth+1, step):
         for j in range(num_of_same_complexity_problems):
-            # Problem name
-            problem_name = "BLOCKS-" + str((i+step-from_nth)//step)
+            instance_name = f"{out_folder}/{problem_id}.pddl"
+            str_problem = generate_problem(name=f"blocks_{problem_id}", nblocks=vblocks[i-from_nth])
+            with open(instance_name, "w") as f_problem:
+                f_problem.write(str_problem)
+            translate_pddl_to_ram(domain_file=domain_name, instance_file=instance_name, output_dir=out_folder, pddl_action="", id=problem_id)
+            problem_id += 1
 
-            str_problem = generate_problem(problem_name, vblocks[i-from_nth])
-
-            f_problem = open(out_folder + str((i+step-from_nth)//step) + "-" + str(j) + ".pddl", "w")
-            f_problem.write(str_problem)
-            f_problem.close()
-
-        # i += step
-    """
-    # TRANSLATION
-    for i in range(from_nth, to_nth+1, step):
-        for j in range(num_of_same_complexity_problems):
-            reader = PDDLReader(raise_on_error=True)
-            reader.parse_domain(out_folder + "domain.pddl")
-            problem = reader.parse_instance(out_folder + str((i+step-from_nth)//step) + "-" + str(j) + ".pddl")
-        # i += step
-    """
     sys.exit(0)
 
 
