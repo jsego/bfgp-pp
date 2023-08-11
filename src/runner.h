@@ -77,7 +77,7 @@ namespace runner{
                      StatsInfo *stats_info,
                      bool save_pddl_plans = false){
         auto vps = prog->run( gpp, save_pddl_plans );
-        // ToDo: print pddl_plans to files here
+
         if(save_pddl_plans){
             for(size_t instance_id = 1; instance_id <= gpp->get_num_instances(); instance_id++){
                 std::ofstream ofs("plan." + std::to_string(instance_id));
