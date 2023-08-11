@@ -16,8 +16,11 @@
     },    
 	{"name": "gripper",
      "args": "-f 2 -t 11"     
-    },    
-	{"name": "reverse", 
+    },
+    {"name": "miconic",
+     "args": "-f 2 -t 11"
+    },
+    {"name": "reverse",
      "args": "-f 2 -t 11 -m synthesis"     
     },    
 	{"name": "select", 

@@ -16,7 +16,10 @@
     },    
 	{"name": "gripper",
      "args": "-f 12 -t 1011"     
-    },    
+    },
+    {"name": "miconic",
+      "args": "-f 12 -t 111"
+    },
 	{"name": "reverse", 
      "args": "-m validation -f 100 -s 10 -t 1100"     
     },    
