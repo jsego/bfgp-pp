@@ -135,7 +135,8 @@ def main():
             str_problem = generate_problem(name=f"blocks_{problem_id}", nblocks=vblocks[i-from_nth])
             with open(instance_name, "w") as f_problem:
                 f_problem.write(str_problem)
-            translate_pddl_to_ram(domain_file=domain_name, instance_file=instance_name, output_dir=out_folder, pddl_action="", id=problem_id)
+            translate_pddl_to_ram(domain_file=domain_name, instance_file=instance_name, output_dir=out_folder,
+                                  pddl_action="", id=problem_id)
             problem_id += 1
 
     sys.exit(0)
