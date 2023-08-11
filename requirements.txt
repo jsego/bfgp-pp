@@ -1,5 +1,8 @@
 antlr4-python3-runtime==4.7.2
 multipledispatch==0.6.0
+numpy==1.25.2
 psutil==5.9.5
 six==1.16.0
 tarski==0.8.2
+tqdm==4.66.1
+
