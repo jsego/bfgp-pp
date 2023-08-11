@@ -1,0 +1,5 @@
+[INSTANCE]: 4
+[DOMAIN]: CELLULAR
+[OBJECTS]: c0:object c1:object c2:object c3:object c4:object c5:object c6:object c7:object c8:object c9:object c10:object c11:object c12:object c13:object c14:object c15:object c16:object c17:object c18:object 
+[INIT]: (cell(c0)=0) (cell(c1)=0) (cell(c2)=0) (cell(c3)=0) (cell(c4)=0) (cell(c5)=1) (cell(c6)=1) (cell(c7)=0) (cell(c8)=1) (cell(c9)=0) (cell(c10)=1) (cell(c11)=0) (cell(c12)=1) (cell(c13)=1) (cell(c14)=0) (cell(c15)=0) (cell(c16)=0) (cell(c17)=0) (cell(c18)=0) 
+[GOAL]: (cell(c0)=0) (cell(c1)=0) (cell(c2)=0) (cell(c3)=0) (cell(c4)=1) (cell(c5)=1) (cell(c6)=1) (cell(c7)=0) (cell(c8)=0) (cell(c9)=0) (cell(c10)=0) (cell(c11)=0) (cell(c12)=1) (cell(c13)=1) (cell(c14)=1) (cell(c15)=0) (cell(c16)=0) (cell(c17)=0) (cell(c18)=0) 

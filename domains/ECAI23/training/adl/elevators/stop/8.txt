@@ -1,0 +1,20 @@
+[INSTANCE]: mixed_f2_p1_u0_v0_g0_a0_n0_A0_B0_N0_F0_r0
+[DOMAIN]: miconic
+
+[OBJECTS]:
+f0:floor
+f1:floor
+p0:passenger
+
+[INIT]:
+(action_stop(f0)=1)
+(above(f0,f1)=1)
+(origin(p0,f1)=1)
+(destin(p0,f0)=1)
+(lift_at(f0)=1)
+
+[GOAL]:
+(above(f0,f1)=1)
+(origin(p0,f1)=1)
+(destin(p0,f0)=1)
+(lift_at(f0)=1)

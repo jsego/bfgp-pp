@@ -1,0 +1,19 @@
+[DOMAIN]: transport
+
+[TYPES]:
+location:object
+target:object
+locatable:object
+vehicle:locatable
+package:locatable
+capacity_number:object
+
+[FUNCTIONS]:
+road(?x0:location,?x1:location)
+at(?x2:locatable,?x3:location)
+in(?x4:package,?x5:vehicle)
+capacity(?x6:vehicle,?x7:capacity_number)
+capacity_predecessor(?x8:capacity_number,?x9:capacity_number)
+action_drive(?v:vehicle,?l1:location,?l2:location)
+action_pick_up(?v:vehicle,?l:location,?p:package,?s1:capacity_number,?s2:capacity_number)
+action_drop(?v:vehicle,?l:location,?p:package,?s1:capacity_number,?s2:capacity_number)
