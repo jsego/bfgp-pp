@@ -23,6 +23,9 @@
 	{"name": "select", 
      "args": "-m validation -f 100 -s 10 -t 1100"     
     },    
+	{"name": "spanner",
+     "args": "-f 12 -t 111"     
+    },    
 	{"name": "sorting",
      "args": "-m validation -f 12 -s 1 -t 111"     
     },    

@@ -23,6 +23,9 @@
 	{"name": "select", 
      "args": "-f 2 -t 11 -m synthesis"     
     },    
+	{"name": "spanner",
+     "args": "-f 2 -t 11"     
+    },    
 	{"name": "sorting",
      "args": "-f 2 -t 11 -m synthesis"     
     },    
