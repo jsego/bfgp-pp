@@ -1,0 +1,37 @@
+{
+"in_folder": "domains/aij23/generators/",
+"out_folder": "domains/aij23/synthesis/",
+"domains": [
+	{"name": "blocks_ontable",
+     "args": "-f 2 -t 11"     
+    },    
+	{"name": "corridor",
+     "args": "-f 2 -t 11"     
+    },    
+	{"name": "fibonacci",
+     "args": "-f 2 -t 11"     
+    },    
+	{"name": "find",
+     "args": "-f 2 -t 11"     
+    },    
+	{"name": "gripper",
+     "args": "-f 2 -t 11"     
+    },    
+	{"name": "reverse", 
+     "args": "-f 2 -t 11 -m synthesis"     
+    },    
+	{"name": "select", 
+     "args": "-f 2 -t 11 -m synthesis"     
+    },    
+	{"name": "sorting",
+     "args": "-f 2 -t 11 -m synthesis"     
+    },    
+	{"name": "triangular_sum",
+     "args": "-f 2 -t 11"     
+    },
+	{"name": "visitall",
+     "args": "-f 2 -t 11"     
+    }
+]
+}
+

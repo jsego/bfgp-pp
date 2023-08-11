@@ -1,0 +1,36 @@
+{
+"in_folder": "domains/aij23/generators/",
+"out_folder": "domains/aij23/validation/",
+"domains": [
+	{"name": "blocks_ontable",
+     "args": "-f 12 -t 111"     
+    },    
+	{"name": "corridor",
+     "args": "-f 12 -t 1011"     
+    },    
+	{"name": "fibonacci",
+     "args": "-f 12 -t 44"     
+    },    
+	{"name": "find",
+     "args": "-f 100 -s 10 -t 1100"     
+    },    
+	{"name": "gripper",
+     "args": "-f 12 -t 1011"     
+    },    
+	{"name": "reverse", 
+     "args": "-m validation -f 100 -s 10 -t 1100"     
+    },    
+	{"name": "select", 
+     "args": "-m validation -f 100 -s 10 -t 1100"     
+    },    
+	{"name": "sorting",
+     "args": "-m validation -f 12 -s 1 -t 111"     
+    },    
+	{"name": "triangular_sum",
+     "args": "-f 12 -t 1011"     
+    },
+	{"name": "visitall",
+     "args": "-f 12 -t 61"     
+    }
+]
+}

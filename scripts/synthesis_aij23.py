@@ -1,4 +1,5 @@
 import argparse
+import json
 import logging
 import os
 import multiprocessing as mp
@@ -40,6 +41,17 @@ class Task(ABC):
     @abstractmethod
     def get_command(self) -> str:
         pass
+
+@dataclass(frozen=True)
+class GeneratorTask(Task):
+    domain: str
+    in_folder: str
+    out_folder: str
+    args: str
+
+    def get_command(self) -> str:
+        return (f"PYTHONHASHSEED=0 python {self.in_folder}/{self.domain}.py {self.args} "
+                f"-o {self.out_folder}/{self.domain}/")
 
 @dataclass(frozen=True)
 class SynthesisTask(Task):
@@ -84,6 +96,20 @@ def parallel_execution(tasks: List[Task]):
     pbar.close()
 
 
+def generate_instances(json_file: str):
+    with open(json_file) as json_data:
+        data = json.load(json_data)
+    in_folder = data["in_folder"]
+    out_folder = data["out_folder"]
+
+    # Create all domain dirs
+    for dom in data["domains"]:
+        os.makedirs(f"{out_folder}/{dom['name']}", exist_ok=True)
+
+    tasks = [GeneratorTask(domain=dom["name"], in_folder=in_folder, out_folder=out_folder, args=dom["args"])
+             for dom in data['domains']]
+    parallel_execution(tasks=tasks)
+
 def experiment_1():
     """Tables 1 & 2 - Individual analysis of each evaluation function and domain"""
     lines = [4, 5, 7, 7, 7, 8, 11, 11, 15]
@@ -127,9 +153,12 @@ def main():
     #args = parser.parse_args()
     #config_file = args.config_file
 
+    generate_instances("scripts/aij23_synthesis.json")
+    generate_instances("scripts/aij23_validation.json")
+
     #experiment_1()
     #experiment_2()
-    experiment_3()
+    #experiment_3()
 
 if __name__ == "__main__":
     main()
