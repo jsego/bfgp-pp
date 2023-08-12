@@ -153,8 +153,8 @@ def main():
     #args = parser.parse_args()
     #config_file = args.config_file
 
-    generate_instances("scripts/aij23_synthesis.json")
-    generate_instances("scripts/aij23_validation.json")
+    generate_instances("scripts/synthesis_aij23.json")
+    generate_instances("scripts/validation_aij23.json")
 
     #experiment_1()
     #experiment_2()

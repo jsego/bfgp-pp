@@ -23,6 +23,9 @@
 	{"name": "reverse", 
      "args": "-m validation -f 100 -s 10 -t 1100"     
     },    
+	{"name": "satellite", 
+     "args": "-f 11 -t 60"     
+    },   
 	{"name": "select", 
      "args": "-m validation -f 100 -s 10 -t 1100"     
     },    
