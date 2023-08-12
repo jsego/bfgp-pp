@@ -1,91 +1,100 @@
-#!/usr/bin/env python
-# coding: utf-8
-
 import sys
 import random
 import argparse
+from typing import Tuple
+from pddl_translator import translate_pddl_to_ram
+
+
+def get_objects(n_size: int) -> str:
+    return " ".join([f"l{i}" for i in range(1, n_size+1)]) + " - object "
+
+
+def get_init(n_size: int) -> Tuple[str, int]:
+    agent_at = random.randint(1, n_size)
+    goal_at = agent_at
+    while goal_at == agent_at:
+        goal_at = random.randint(1, n_size)
+    str_init = f"(at l{agent_at})\n"
+    str_init += f"    (goal_at l{goal_at})\n"
+    str_init += "    " + "    \n".join([f"(adjacent l{i} l{i+1})" for i in range(1, n_size)])
+    return str_init, goal_at
+
+
+def get_goals(goal_at: int) -> str:
+    return f"(and (at l{goal_at}))"
+
+
+def generate_problem(name: str, n_size: int):
+    str_obj = get_objects(n_size)
+    str_init, goal_at = get_init(n_size)
+    str_goal = get_goals(goal_at)
+    return f"(define (problem {name})\n" \
+           f"  (:domain corridor)\n" \
+           f"  (:objects {str_obj})\n" \
+           f"  (:init {str_init})\n" \
+           f"  (:goal {str_goal}))\n"
+
+
+def generate_domain():
+    return """(define (domain corridor)
+ (:requirements :strips :negative-preconditions)
+ (:predicates 
+    (at ?l)
+    (adjacent ?l1 ?l2)
+    (goal_at ?l))
+ 
+ (:action move_right
+    :parameters (?from ?to)
+    :precondition (and (adjacent ?from ?to) (at ?from) (not (at ?to)))
+    :effect (and (not (at ?from)) (at ?to)))
+    
+ (:action move_left
+    :parameters (?from ?to)
+    :precondition (and (adjacent ?to ?from) (at ?from) (not (at ?to)))
+    :effect (and (not (at ?from)) (at ?to))))
+ 
+"""
 
 
 def main():
-	parser = argparse.ArgumentParser(description="Corridor generator")
-	parser.add_argument("-f", "--from_nth", type=int, required=True)
-	parser.add_argument("-t", "--to_nth", type=int, required=True)
-	parser.add_argument("-s", "--step", type=int, nargs='?', default=1, required=False)
-	parser.add_argument("-o", "--out_folder", type=str, required=True)
-	args = parser.parse_args()
+    parser = argparse.ArgumentParser(description="Corridor generator")
+    parser.add_argument("-f", "--from_nth", type=int, required=True)
+    parser.add_argument("-t", "--to_nth", type=int, required=True)
+    parser.add_argument("-s", "--step", type=int, nargs='?', default=1, required=False)
+    parser.add_argument("-o", "--out_folder", type=str, required=True)
+    args = parser.parse_args()
 
-	from_nth = args.from_nth
-	to_nth = args.to_nth
-	step = args.step
-	out_folder = args.out_folder
+    from_nth = args.from_nth
+    to_nth = args.to_nth
+    step = args.step
+    out_folder = args.out_folder
 
-	if step < 1 or to_nth < from_nth:
-		sys.exit(-2)
-		
-	# DOMAIN
-	str_domain = "[DOMAIN]: CORRIDOR\n\n"
-	str_domain += "[FUNCTIONS]:\n"	
-	str_domain += "at(?o:object)\n"
-	str_domain += "goal_at(?o:object)\n"
-	str_domain += "adjacent(?o1:object,?o2:object)\n\n"
-		
-	str_domain += "[ACTIONS]:\n"			
-	str_domain += "[ACTION]: move(?o1:object,?o2:object)\n"
-	str_domain += "[TYPE]: memory\n"
-	str_domain += "[PRECONDITIONS]:\n"
-	str_domain += "(at(?o1)=1)\n"
-	str_domain += "(at(?o2)=0)\n"
-	str_domain += "(adjacent(?o1,?o2)=1)\n"
-	str_domain += "[EFFECTS]:\n"
-	str_domain += "(at(?o1)=0)\n"
-	str_domain += "(at(?o2)=1)\n"
+    if step < 1 or to_nth < from_nth or from_nth < 2:
+        sys.exit(-2)
 
-	f_domain=open( out_folder + "domain.txt", "w" )
-	f_domain.write( str_domain )
-	f_domain.close()
-		
+    # DOMAIN
+    domain_name = f"{out_folder}/domain.pddl"
+    str_domain = generate_domain()
+    with open(domain_name, "w") as f_domain:
+        f_domain.write(str_domain)
 
-	random.seed(1007)
+    random.seed(1007)
 
-	# INSTANCES
-	for i in range(from_nth,to_nth+1,step):
-		# Problem name
-		str_problem = "[INSTANCE]: corridor-" + str(i) + "\n"
-		str_problem += "[DOMAIN]: CORRIDOR\n"		
-		
-		# Compute (pre)
-		vi = random.randint(1,i)
-		vgi = random.randint(1,i)
-		while vgi == vi:
-			vgi = random.randint(1, i)
-			
-		# Objects
-		str_problem += "\n[OBJECTS]:\n"
-		for j in range(1,i+1):
-			str_problem += "l"+str(j)+":object\n"
-		
-		# Initial state
-		str_problem += "\n[INIT]:\n"
-		str_problem += "(at(l"+str(vi)+")=1)\n"
-		str_problem += "(goal_at(l"+str(vgi)+")=1)\n"
-		for j in range(1,i):
-			str_problem += "(adjacent(l"+str(j)+",l"+str(j+1)+")=1)\n"
-			str_problem += "(adjacent(l"+str(j+1)+",l"+str(j)+")=1)\n"
-		
-		# Compute		
-		
-		# Goal condition
-		str_problem += "\n[GOAL]:\n"
-		str_problem += "(at(l"+str(vgi)+")=1)\n"
-		
-		#print( str_problem )
-		f_problem=open( out_folder + str( (i+step-from_nth)//step ) + ".txt","w")
-		f_problem.write( str_problem )
-		f_problem.close()
-		
-		#i += step
-	
-	sys.exit( 0 )
-	
+    # INSTANCES
+    problem_id = 1
+    num_of_same_complexity_problems = 1
+    for i in range(from_nth, to_nth+1, step):
+        for j in range(num_of_same_complexity_problems):
+            instance_name = f"{out_folder}/{problem_id}.pddl"
+            str_problem = generate_problem(name=f"corridor_{problem_id}", n_size=i)
+            with open(instance_name, "w") as f_problem:
+                f_problem.write(str_problem)
+            translate_pddl_to_ram(domain_file=domain_name, instance_file=instance_name, output_dir=out_folder,
+                                  pddl_action="", id=problem_id)
+            problem_id += 1
+
+    sys.exit(0)
+
+
 if __name__ == "__main__":
-	main()
+    main()

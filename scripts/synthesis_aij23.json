@@ -13,7 +13,10 @@
     },    
 	{"name": "find",
      "args": "-f 2 -t 11"     
-    },    
+    },
+    {"name": "grid",
+      "args": "-f 2 -t 11"
+    },
 	{"name": "gripper",
      "args": "-f 2 -t 11"     
     },

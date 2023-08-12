@@ -6,14 +6,17 @@
      "args": "-f 12 -t 111"     
     },    
 	{"name": "corridor",
-     "args": "-f 12 -t 1011"     
+     "args": "-f 12 -t 111"
     },    
 	{"name": "fibonacci",
      "args": "-f 12 -t 44"     
     },    
 	{"name": "find",
      "args": "-f 100 -s 10 -t 1100"     
-    },    
+    },
+    {"name": "grid",
+      "args": "-f 12 -t 111 -s 2"
+    },
 	{"name": "gripper",
      "args": "-f 12 -t 1011"     
     },
@@ -24,7 +27,7 @@
      "args": "-m validation -f 100 -s 10 -t 1100"     
     },    
 	{"name": "satellite", 
-     "args": "-f 11 -t 60"     
+     "args": "-f 11 -t 30"
     },   
 	{"name": "select", 
      "args": "-m validation -f 100 -s 10 -t 1100"     
