@@ -1,112 +1,100 @@
-#!/usr/bin/env python
-# coding: utf-8
-
 import sys
 import argparse
+from pddl_translator import translate_pddl_to_ram
+
+
+def get_objects(n_balls: int):
+    return " ".join([f"b{i}" for i in range(1, 1+n_balls)]) + " - ball"
+
+
+def get_init(n_balls: int):
+    return ("\n    ".join([f"(at b{i} rooma)" for i in range(1, 1+n_balls)]) +
+            "\n    (at_robby rooma)\n    (free left)\n    (free right)")
+
+
+def get_goals(n_balls: int):
+    return "\n    ".join([f"(at b{i} roomb)" for i in range(1, 1+n_balls)])
+
+
+def generate_problem(name, n_balls):
+    return f"(define (problem {name})\n" \
+           f"  (:domain Gripper)\n" \
+           f"  (:objects {get_objects(n_balls)})\n" \
+           f"  (:init {get_init(n_balls)})\n" \
+           f"  (:goal (and {get_goals(n_balls)})))\n"
+
+
+def generate_domain():
+    return """(define (domain Gripper)
+   (:requirements :typing :strips)
+   (:types room gripper ball - object)
+   (:constants left right - gripper rooma roomb - room)
+   (:predicates
+       (at_robby ?r - room)
+       (at ?b - ball ?r - room)
+       (free ?g - gripper)
+       (carry ?b - ball ?g - gripper))
+
+   (:action move
+       :parameters (?from - room ?to - room)
+       :precondition (and (at_robby ?from))
+       :effect (and (at_robby ?to)
+                    (not (at_robby ?from))))
+
+   (:action pick
+       :parameters (?b - ball ?r - room ?g - gripper)
+       :precondition (and (at ?b ?r)
+                          (at_robby ?r)
+                          (free ?g))
+       :effect (and (carry ?b ?g)
+                    (not (at ?b ?r))
+                    (not (free ?g))))
+
+   (:action drop
+       :parameters (?b - ball ?r - room ?g - gripper)
+       :precondition (and (carry ?b ?g)
+                          (at_robby ?r))
+       :effect (and (at ?b ?r)
+                    (free ?g)
+                    (not (carry ?b ?g)))))
+"""
+
 
 def main():
-	parser = argparse.ArgumentParser(description="Gripper generator")
-	parser.add_argument("-f", "--from_nth", type=int, required=True)
-	parser.add_argument("-t", "--to_nth", type=int, required=True)
-	parser.add_argument("-s", "--step", type=int, nargs='?', default=1, required=False)
-	parser.add_argument("-o", "--out_folder", type=str, required=True)
-	args = parser.parse_args()
+    parser = argparse.ArgumentParser(description="Gripper generator")
+    parser.add_argument("-f", "--from_nth", type=int, required=True)
+    parser.add_argument("-t", "--to_nth", type=int, required=True)
+    parser.add_argument("-s", "--step", type=int, nargs='?', default=1, required=False)
+    parser.add_argument("-o", "--out_folder", type=str, required=True)
+    args = parser.parse_args()
 
-	from_nth = args.from_nth
-	to_nth = args.to_nth
-	step = args.step
-	out_folder = args.out_folder
+    from_nth = args.from_nth
+    to_nth = args.to_nth
+    step = args.step
+    out_folder = args.out_folder
 
-	if step < 1 or to_nth < from_nth:
-		sys.exit(-2)
-		
-	# DOMAIN
-	str_domain = "[DOMAIN]: Gripper\n\n"
-	str_domain += "[TYPES]:\n"
-	str_domain += "room:object\n"
-	str_domain += "ball:object\n"
-	str_domain += "gripper:object\n\n"
+    if step < 1 or to_nth < from_nth:
+        sys.exit(-2)
 
-	str_domain += "[CONSTANTS]:\n"
-	str_domain += "left:gripper\n"
-	str_domain += "right:gripper\n"
-	str_domain += "roomA:room\n"
-	str_domain += "roomB:room\n\n"
+    # DOMAIN
+    domain_name = f"{out_folder}/domain.pddl"
+    str_domain = generate_domain()
+    with open(domain_name, "w") as f_domain:
+        f_domain.write(str_domain)
 
-	str_domain += "[FUNCTIONS]:\n"	
-	str_domain += "at_robby(?r:room)\n"
-	str_domain += "at(?b:ball,?r:room)\n"
-	str_domain += "free(?g:gripper)\n"
-	str_domain += "carry(?b:ball,?g:gripper)\n\n"
-	
-	str_domain += "[ACTIONS]:\n"		
-	str_domain += "[ACTION]: move(?r1:room,?r2:room)\n"
-	str_domain += "[TYPE]: memory\n"
-	str_domain += "[PRECONDITIONS]:\n"
-	str_domain += "(at_robby(?r1)=1)\n"
-	str_domain += "(at_robby(?r2)=0)\n"
-	str_domain += "[EFFECTS]:\n"
-	str_domain += "(at_robby(?r1)=0)\n"
-	str_domain += "(at_robby(?r2)=1)\n"
+    # INSTANCES
+    problem_id = 1
+    for i in range(from_nth, to_nth+1, step):
+        instance_name = f"{out_folder}/{problem_id}.pddl"
+        str_problem = generate_problem(name=f"gripper_{problem_id}", n_balls=i)
+        with open(instance_name, "w") as f_problem:
+            f_problem.write(str_problem)
+        translate_pddl_to_ram(domain_file=domain_name, instance_file=instance_name, output_dir=out_folder,
+                              pddl_action="", id=problem_id)
+        problem_id += 1
 
-	str_domain += "\n[ACTION]: pick(?b:ball,?r:room,?g:gripper)\n"
-	str_domain += "[TYPE]: memory\n"
-	str_domain += "[PRECONDITIONS]:\n"
-	str_domain += "(at(?b,?r)=1)\n"
-	str_domain += "(at_robby(?r)=1)\n"
-	str_domain += "(free(?g)=1)\n"
-	str_domain += "[EFFECTS]:\n"
-	str_domain += "(carry(?b,?g)=1)\n"
-	str_domain += "(at(?b,?r)=0)\n"
-	str_domain += "(free(?g)=0)\n"
-	
-	str_domain += "\n[ACTION]: drop(?b:ball,?r:room,?g:gripper)\n"
-	str_domain += "[TYPE]: memory\n"
-	str_domain += "[PRECONDITIONS]:\n"
-	str_domain += "(carry(?b,?g)=1)\n"
-	str_domain += "(at_robby(?r)=1)\n"
-	str_domain += "[EFFECTS]:\n"
-	str_domain += "(carry(?b,?g)=0)\n"
-	str_domain += "(at(?b,?r)=1)\n"
-	str_domain += "(free(?g)=1)\n"
-		
-	f_domain=open( out_folder + "domain.txt", "w" )
-	f_domain.write( str_domain )
-	f_domain.close()
-			
-	# INSTANCES
-	for i in range(from_nth,to_nth+1,step):
-		# Problem name
-		str_problem = "[INSTANCE]: gripper-" + str(i) + "\n"		
-		str_problem += "[DOMAIN]: Gripper\n"
-		
-		# Objects
-		str_problem += "\n[OBJECTS]:\n"
-		for j in range(i):
-			str_problem += "ball"+str(j+1)+":ball\n"
-				
-		# Initial state
-		str_problem += "\n[INIT]:\n"
-		str_problem += "(at_robby(roomA)=1)\n"
-		for j in range(i):
-			str_problem += "(at(ball"+str(j+1)+",roomA)=1)\n"
-		str_problem += "(free(left)=1)\n"
-		str_problem += "(free(right)=1)\n"
-		
-		# Compute		
-		
-		# Goal condition
-		str_problem += "\n[GOAL]:\n"
-		for j in range(i):
-			str_problem += "(at(ball"+str(j+1)+",roomB)=1)\n"
-		
-		#print( str_problem )
-		f_problem=open( out_folder + str( (i+step-from_nth)//step ) + ".txt","w")
-		f_problem.write( str_problem )
-		f_problem.close()
-		#i += step
-	
-	sys.exit( 0 )
-	
+    sys.exit(0)
+
+
 if __name__ == "__main__":
-	main()
+    main()
