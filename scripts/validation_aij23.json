@@ -34,7 +34,10 @@
     },   
 	{"name": "select", 
      "args": "-m validation -f 100 -s 10 -t 1100"     
-    },    
+    },
+    {"name": "sieve_of_erathostenes",
+      "args": "-f 15 -t 114"
+    },
 	{"name": "spanner",
      "args": "-f 12 -t 111"     
     },    

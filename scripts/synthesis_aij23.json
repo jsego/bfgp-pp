@@ -34,8 +34,11 @@
     },   
 	{"name": "select", 
      "args": "-f 2 -t 11 -m synthesis"     
-    },    
-	{"name": "spanner",
+    },
+    {"name": "sieve_of_erathostenes",
+      "args": "-f 5 -t 14"
+    },
+    {"name": "spanner",
      "args": "-f 2 -t 11"     
     },    
 	{"name": "sorting",
