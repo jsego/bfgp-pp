@@ -8,6 +8,7 @@ from typing import List
 from dataclasses import dataclass
 import subprocess
 from abc import ABC, abstractmethod
+import shutil
 
 
 def execute_command(command: List[str], **kwargs) -> int:
@@ -102,8 +103,9 @@ def generate_instances(json_file: str):
     in_folder = data["in_folder"]
     out_folder = data["out_folder"]
 
-    # Create all domain dirs
+    # Remove old and create all new domain dirs
     for dom in data["domains"]:
+        shutil.rmtree(f"{out_folder}/{dom['name']}", ignore_errors=True)
         os.makedirs(f"{out_folder}/{dom['name']}", exist_ok=True)
 
     tasks = [GeneratorTask(domain=dom["name"], in_folder=in_folder, out_folder=out_folder, args=dom["args"])

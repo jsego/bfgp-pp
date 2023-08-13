@@ -20,6 +20,9 @@
 	{"name": "gripper",
      "args": "-f 12 -t 1011"     
     },
+    {"name": "michalski_trains",
+      "args": ""
+    },
     {"name": "miconic",
       "args": "-f 12 -t 111"
     },
