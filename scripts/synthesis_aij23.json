@@ -6,7 +6,7 @@
      "args": "-f 2 -t 11"     
     },    
 	{"name": "corridor",
-     "args": "-f 2 -t 11"     
+     "args": "-f 3 -t 12"     
     },    
 	{"name": "fibonacci",
      "args": "-f 2 -t 11"     

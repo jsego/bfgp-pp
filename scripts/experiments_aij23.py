@@ -114,10 +114,10 @@ def generate_instances(json_file: str):
 
 def experiment_1():
     """Tables 1 & 2 - Individual analysis of each evaluation function and domain"""
-    lines = [4, 5, 7, 7, 7, 8, 11, 11, 15]
+    domains = ["find", "triangular_sum", "reverse", "select", "fibonacci", "gripper", "sorting", "corridor", "visitall"]
+    lines = [4, 5, 7, 7, 7, 8, 9, 10, 13]
     extra_pointers = [0, 0, 0, 1, 0, 0, 0, 0, 0]
-    problems = [f"domains/aij23/synthesis/{domain}/"
-                for domain in ["find", "triangular_sum", "reverse", "select", "fibonacci", "gripper", "sorting", "corridor", "visitall"]]
+    problems = [f"domains/aij23/synthesis/{domain}/" for domain in domains]
     # f1="lc"; f2="nei"; f3="mri"; f4="dll"; f5="ed"; f6="ac"; f7="mnl"; f8="astar"; f9="wastar";
     eval_funcs = ["lc", "nei", "mri", "dll", "ed", "ac", "mnl", "astar", "wastar"]
 
@@ -127,10 +127,10 @@ def experiment_1():
 
 def experiment_2():
     """Table 4 - Best combination of two evaluation functions"""
-    lines = [4, 5, 7, 7, 7, 8, 11, 11]#, 15]
-    extra_pointers = [0, 0, 0, 1, 0, 0, 0, 0]#, 0]
-    problems = [f"domains/aij23/synthesis/{domain}/"
-                for domain in ["find", "triangular_sum", "reverse", "select", "fibonacci", "gripper", "sorting", "corridor"]]#, "visitall"]]
+    domains = ["find", "triangular_sum", "reverse", "select", "fibonacci", "gripper", "sorting", "corridor", "visitall"]
+    lines = [4, 5, 7, 7, 7, 8, 9, 10, 13]
+    extra_pointers = [0, 0, 0, 1, 0, 0, 0, 0, 0]
+    problems = [f"domains/aij23/synthesis/{domain}/" for domain in domains]
 
     eval_funcs = ["lc ed", "ed lc", "nei ed", "ed nei", "mri ed", "ed mri", "mnl ed", "ed mnl"]
 
@@ -140,14 +140,25 @@ def experiment_2():
 
 def experiment_3():
     """Table 3 - Validation of synthesized programs (better use the programs from the best combination of experiment_2)"""
-    domains = ["find", "triangular_sum", "reverse", "select", "fibonacci", "gripper", "sorting", "corridor"]#, "visitall"]
-    lines = [4, 5, 7, 7, 7, 8, 11, 11]#, 15]
-    extra_pointers = [0, 0, 0, 1, 0, 0, 0, 0]#, 0]
+    domains = ["find", "triangular_sum", "reverse", "select", "fibonacci", "gripper", "sorting", "corridor", "visitall"]
+    lines = [4, 5, 7, 7, 7, 8, 9, 10, 13]
+    extra_pointers = [0, 0, 0, 1, 0, 0, 0, 0, 0]
     problems = [f"domains/aij23/validation/{domain}/" for domain in domains]
     programs = [f"experiments/aij23/synthesis/{domain}_{lines[idx]}_ed_mri.prog" for idx, domain in enumerate(domains)]
     parallel_execution(tasks=[ValidationTask(problem, programs[idx], extra_pointers[idx], inf_detection)
                               for inf_detection in ["False", "True"] for idx, problem in enumerate(problems)])
 
+def experiment_4():
+    """Table 5 - Synthesis with fewer instances to compare performance to previous approaches, i.e. PP and HFSC"""
+    domains = ["find", "triangular_sum", "reverse", "select", "fibonacci", "gripper", "sorting", "corridor", "visitall"]
+    lines = [4, 5, 7, 7, 7, 8, 9, 10, 13]
+    extra_pointers = [0, 0, 0, 1, 0, 0, 0, 0, 0]
+    problems = [f"domains/aij23/synthesis_comparison/{domain}/" for domain in domains]
+    programs = [f"experiments/aij23/synthesis_comparison/{domain}_{lines[idx]}_ed_mri.prog"
+                for idx, domain in enumerate(domains)]
+    eval_funcs = ["lc ed", "ed lc", "nei ed", "ed nei", "mri ed", "ed mri", "mnl ed", "ed mnl"]
+    parallel_execution(tasks=[SynthesisTask(lines[idx], prob, [ef], extra_pointers[idx])
+                              for ef in eval_funcs for idx, prob in enumerate(problems)])
 
 def main():
     #parser = argparse.ArgumentParser(description='Executing the BFGP over all listed GP problems with a given configuration')
@@ -161,6 +172,7 @@ def main():
     #experiment_1()
     #experiment_2()
     #experiment_3()
+    experiment_4()
 
 if __name__ == "__main__":
     main()
