@@ -58,7 +58,7 @@ namespace theory {
             if(ins_end == nullptr and program_line+1 == p->get_num_instructions()) return false;
 
             // 2. Check that GOTO instructions can only be programmed after math instruction, and they
-            // cannot jump to the same line or the next one
+            // cannot jump to the same line or the next one, and no previous GOTO can directly jump to it
             auto ins_goto = dynamic_cast<instructions::Goto*>(new_ins);
             auto prev_ins = (program_line>0?p->get_instruction(program_line-1): nullptr);
             if(ins_goto){
@@ -66,6 +66,31 @@ namespace theory {
                 if(prev_ins and prev_ins->get_type() != ActionType::Math) return false;
                 auto dest_line = ins_goto->get_destination_line();
                 if(dest_line == program_line or dest_line == program_line+1) return false;
+                for(size_t line=0; line < p->get_num_instructions(); ++line ){
+                    if(line == program_line ) continue;
+                    auto prev_goto = dynamic_cast<instructions::Goto*>(p->get_instruction(line));
+                    if(not prev_goto) continue;
+                    auto prev_dest_line = prev_goto->get_destination_line();
+                    // don't let goto instructions jump to new one
+                    if(prev_dest_line == program_line) return false;
+                    // don't jump to a goto instruction
+                    if(line == dest_line) return false;
+                    // [EXTRA] syntactic constraints for well-structured planning programs
+                    // if the new goto is inside a goto loop, new dest. line in the loop or right after
+                    if( prev_dest_line < program_line and program_line < line and
+                       (dest_line < prev_dest_line or line+1 < dest_line )) return false;
+                    // the same must hold the other way around
+                    if( dest_line < line and line < program_line and
+                       (prev_dest_line < dest_line or program_line+1 < prev_dest_line)) return false;
+                    // if the new goto is inside a conditional goto, new dest. line exactly into the conditional
+                    if( line < program_line and program_line < prev_dest_line and
+                        (dest_line <= line or prev_dest_line < dest_line)) return false;
+                    // the same must hold the other way around
+                    if( program_line < line and line < dest_line and
+                        (prev_dest_line <= program_line or dest_line < prev_dest_line)) return false;
+
+
+                }
             }
             // 3. Check if the instruction is not a GOTO, but the previous one is TEST or CMP (which forces the next one
             // to be a GOTO instruction)
