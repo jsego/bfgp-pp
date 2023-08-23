@@ -78,13 +78,12 @@ def main():
     with open(domain_name, "w") as f_domain:
         f_domain.write(str_domain)
 
-    random.seed(1007)
-
     # INSTANCES
     problem_id = 1
     num_of_same_complexity_problems = 1
     for i in range(from_nth, to_nth+1, step):
-        for j in range(num_of_same_complexity_problems):
+        for j in range(num_of_same_complexity_problems):        
+            random.seed(problem_id)
             instance_name = f"{out_folder}/{problem_id}.pddl"
             str_problem = generate_problem(name=f"corridor_{problem_id}", n_size=i)
             with open(instance_name, "w") as f_problem:

@@ -39,7 +39,8 @@ def main():
 	f_domain.close()
 
 	# INSTANCES
-	np.random.seed(1007)
+	problem_id = 1
+	seed = problem_id
 	i = from_size
 
 	# synthesis by default
@@ -47,6 +48,7 @@ def main():
 
 	while i <= to_size:
 		# Computing
+		np.random.seed(seed)  # new id for each problem
 		v = np.random.randint(max_val, size=i)
 
 		# Problem name
@@ -70,11 +72,13 @@ def main():
 			str_problem += "(vector(p" + str(j) + ")=" + str(v[j]) + ")\n"
 
 		# print( str_problem )
-		f_problem = open(out_folder + str((i - from_size + step) // step) + ".txt", "w")
+		f_problem = open(f"{out_folder}/{problem_id}.txt", "w")
 		f_problem.write(str_problem)
 		f_problem.close()
 
 		i += step
+		problem_id += 1
+		seed += 1
 
 	sys.exit(0)
 
