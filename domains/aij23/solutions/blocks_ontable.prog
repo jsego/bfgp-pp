@@ -1,0 +1,13 @@
+0. dec(ptr_object_1)
+1. goto(0,!((zf=1)(cf=0)))
+2. dec(ptr_object_0)
+3. goto(2,!((zf=1)(cf=0)))
+4. unstack(ptr_object_0,ptr_object_1)
+5. put_down(ptr_object_0)
+6. inc(ptr_object_0)
+7. goto(4,!((zf=1)(cf=0)))
+8. inc(ptr_object_1)
+9. goto(2,!((zf=1)(cf=0)))
+10. inc(ptr_object_2)
+11. goto(0,!((zf=1)(cf=0)))
+12. end

@@ -1,0 +1,5 @@
+0. vector_add(ptr_object_0,ptr_object_1)
+1. set(ptr_object_1,ptr_object_0)
+2. inc(ptr_object_0)
+3. goto(0,!((zf=1)(cf=0)))
+4. end
