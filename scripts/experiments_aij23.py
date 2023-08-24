@@ -154,11 +154,18 @@ def experiment_4():
     lines = [4, 5, 7, 7, 7, 8, 9, 10, 13]
     extra_pointers = [0, 0, 0, 1, 0, 0, 0, 0, 0]
     problems = [f"domains/aij23/synthesis_comparison/{domain}/" for domain in domains]
-    programs = [f"experiments/aij23/synthesis_comparison/{domain}_{lines[idx]}_ed_mri.prog"
-                for idx, domain in enumerate(domains)]
     eval_funcs = ["lc ed", "ed lc", "nei ed", "ed nei", "mri ed", "ed mri", "mnl ed", "ed mnl"]
     parallel_execution(tasks=[SynthesisTask(lines[idx], prob, [ef], extra_pointers[idx])
                               for ef in eval_funcs for idx, prob in enumerate(problems)])
+
+def experiment_5():
+    """Table 6 - Validation of complex programs (better use the programs from the best combination of experiment_2)"""
+    domains = ["blocks_ontable", "grid", "michalski_trains", "miconic", "satellite", "sieve_of_erathostenes", "spanner"]
+    extra_pointers = [1, 0, 0, 0, 0, 2, 0]
+    problems = [f"domains/aij23/validation/{domain}/" for domain in domains]
+    programs = [f"domains/aij23/solutions/{domain}.prog" for idx, domain in enumerate(domains)]
+    parallel_execution(tasks=[ValidationTask(problem, programs[idx], extra_pointers[idx], inf_detection)
+                              for inf_detection in ["False", "True"] for idx, problem in enumerate(problems)])
 
 def main():
     #parser = argparse.ArgumentParser(description='Executing the BFGP over all listed GP problems with a given configuration')
@@ -169,10 +176,11 @@ def main():
     generate_instances("scripts/synthesis_aij23.json")
     generate_instances("scripts/validation_aij23.json")
 
-    #experiment_1()
-    #experiment_2()
-    #experiment_3()
+    experiment_1()
+    experiment_2()
+    experiment_3()
     experiment_4()
+    experiment_5()
 
 if __name__ == "__main__":
     main()
