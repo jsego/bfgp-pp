@@ -7,3 +7,5 @@ tmp/
 tests/build/
 */.idea/
 experiments/
+benchmarks-public/
+domains/aij23/validation/
