@@ -1,0 +1,11 @@
+0. inc(ptr_object_1)
+1. move_right(ptr_object_0,ptr_object_1)
+2. inc(ptr_object_0)
+3. goto(0,!((zf=1)(cf=0)))
+4. test(goal_at(ptr_object_0))
+5. goto(10,!((zf=1)(cf=0)))
+6. dec(ptr_object_1)
+7. move_left(ptr_object_0,ptr_object_1)
+8. dec(ptr_object_0)
+9. goto(4,!((zf=1)(cf=0)))
+10. end

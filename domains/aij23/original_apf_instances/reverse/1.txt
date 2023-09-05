@@ -1,0 +1,14 @@
+[INSTANCE]: reverse-2
+[DOMAIN]: REVERSE
+
+[OBJECTS]:
+p0:object
+p1:object
+
+[INIT]:
+(vector(p0)=1)
+(vector(p1)=0)
+
+[GOAL]:
+(vector(p0)=0)
+(vector(p1)=1)

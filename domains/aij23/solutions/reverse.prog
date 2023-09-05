@@ -1,0 +1,7 @@
+0. swap(ptr_object_0,ptr_object_1)
+1. inc(ptr_object_0)
+2. goto(0,!((zf=1)(cf=0)))
+3. set(ptr_object_0,ptr_object_1)
+4. inc(ptr_object_1)
+5. goto(1,!((zf=1)(cf=0)))
+6. end

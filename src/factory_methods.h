@@ -32,6 +32,8 @@
 #include "evaluation_functions/max_ifs.h"
 #include "evaluation_functions/accumulated_cost.h"
 #include "evaluation_functions/distance_to_last_line.h"
+#include "evaluation_functions/a_star.h"
+#include "evaluation_functions/wa_star.h"
 
 #include "theories/assembler.h"
 #include "theories/c_plus_plus.h"
@@ -58,7 +60,7 @@ namespace factories {
 
         // Parse the existing domain
         auto dom = std::make_unique<Domain>();
-        if(not parser::Parser::parse_domain(dom.get(), problem_folder+"domain.txt"))
+        if(not parser::Parser::parse_domain(dom.get(), problem_folder+"domain.txt", arg_parser))
             utils::system_error("while parsing domain.txt.", ERROR_PARSING_DOMAIN);
         return dom;
     }
@@ -136,7 +138,7 @@ namespace factories {
         // Generating the GP problem
         auto gpp = std::make_unique<GeneralizedPlanningProblem>(
                 std::move(generalized_domain),
-                ((arg_parser->get_theory_name() == "assembler") or arg_parser->get_infinite_detection()),
+                arg_parser->get_infinite_detection(),
                 arg_parser->get_problem_folder());
 
         std::cout << "[INFO] Infinite detection: " << (gpp->get_infinite_detection()?"activated":"deactivated") << "\n";
@@ -150,7 +152,7 @@ namespace factories {
             if (!std::filesystem::exists(input_instance)) break;
 
             auto ins = std::make_unique<Instance>("default", i, dom);
-            parser::Parser::parse_instance(ins.get(), input_instance);
+            parser::Parser::parse_instance(ins.get(), input_instance, arg_parser);
             // If some critical error occurs, it is thrown during the parsing
             gpp->add_instance(std::move(ins));
         }
@@ -195,6 +197,8 @@ namespace factories {
             else if(ef_name == "mi") engine->add_evaluation_function(std::make_unique<evaluation_functions::MaxIfs>());
             else if(ef_name == "ac") engine->add_evaluation_function(std::make_unique<evaluation_functions::AccumulatedCost>());
             else if(ef_name == "dll") engine->add_evaluation_function(std::make_unique<evaluation_functions::DistanceToLastLine>());
+            else if(ef_name == "astar") engine->add_evaluation_function(std::make_unique<evaluation_functions::AStar>());
+            else if(ef_name == "wastar") engine->add_evaluation_function(std::make_unique<evaluation_functions::WAStar>());
             else {
                 // Redundant, this should never happen, it is already in the arg parser
                 utils::system_error("evaluation function " + ef_name + " is unknown.",ERROR_UNKNOWN_EVALUATION_FUNCTION);

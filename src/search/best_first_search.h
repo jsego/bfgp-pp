@@ -25,6 +25,8 @@ namespace search {
         }
 
         void add_node(std::shared_ptr<Node> node) override {
+            /// Before adding the node, clear up the program states to save memory
+            node->get_program()->clear_program_states();
             _open.push(std::move(node));
         }
 
@@ -32,9 +34,9 @@ namespace search {
             return _open.top();
         }
 
-        [[nodiscard]] bool is_goal(Node* node) override {
+        [[nodiscard]] bool is_goal(Node* node, bool run_program=false) override {
             auto p = node->get_program();
-            auto vps = p->run( _gpp.get() );
+            auto vps = (run_program?p->run(_gpp.get()):p->get_program_states());
             _last_failed_instance_idx = -1;
 
             // FIXME: if this happens, then progressive mode fails
@@ -57,7 +59,8 @@ namespace search {
                     return false;
                 }
                 // If the instruction is an END, it cannot be a goal if it is not applicable
-                if(not end->is_applicable(ins, vps[local_id].get())) {
+                //if(not end->is_applicable(ins, vps[local_id].get())) {  /// vps is a vector of unique pointers
+                if(not end->is_applicable(ins, vps[local_id])) {  /// vps is a vector of raw pointers
                     _last_failed_instance_idx = idx;
                     return false;
                 }
@@ -80,26 +83,12 @@ namespace search {
             return true;
         }
 
-/*bool is_aimed_program(Program *p){
-    std::vector<std::string> expected_program ={"for(ptr_object_0--,5)",
-                                                                "cmp(ptr_object_0,ptr_object_1)",
-                                                                "if((zf=0)(cf=1),4)",
-                                                                "swap(ptr_object_0,ptr_object_1)",
-                                                                "inc(ptr_object_1)",
-                                                                "endfor(ptr_object_0--,0)",
-                                                                "end"};
-    for(size_t l = 0; l < expected_program.size(); l++) {
-        if(p->get_instruction(l) != nullptr and p->get_instruction(l)->get_name(false) != expected_program[l])
-            return false;
-    }
-    return true;
-}*/
-
         [[nodiscard]] std::vector<std::shared_ptr<Node> > expand_node(Node* node) override {
-            int pc_max = -1;
+            //int pc_max = -1;
             auto p = node->get_program();
             auto instructions = p->get_instructions();
-
+            int pc_max = p->get_pc_max();  /// Retrieve pc_max from previous program execution
+            /*
             // Retrieve the pc_max (first program line without a programmed instruction)
             for (size_t ins_idx = 0; ins_idx < instructions.size(); ins_idx++) {
                 if (instructions[ins_idx] == nullptr) {
@@ -107,6 +96,7 @@ namespace search {
                     break;
                 }
             }
+            */
 
             /*
             // Retrieve the pc_max from the execution of the program (last nullptr reached)
@@ -117,8 +107,8 @@ namespace search {
                 if(p->get_instruction(line) == nullptr)
                     pc_max = std::max(pc_max, (int) ps->get_line());
             }
-            std::cout << "[INFO] PC_MAX=" << pc_max << "\n";
             */
+            //std::cout << "[INFO] PC_MAX=" << pc_max << "\n";
 
             // Failure case either when the next valid line is not found or if an instruction is already programmed
             if (pc_max == -1 or p->get_instruction(pc_max) != nullptr) return {};
@@ -169,7 +159,7 @@ namespace search {
                 }
 
                 // Test the run
-                auto vps = p2->run(_gpp.get());
+                auto vps = p2->run(_gpp.get()); /// This must be the first an unique run of the program
                 if(vps.empty()) continue;
 
                 // Update constraints
@@ -208,7 +198,7 @@ namespace search {
             auto root_program = std::make_unique<Program>(_gpp.get());
             _theory->set_initial_program(_gpp.get(), root_program.get());
 
-            auto vps = root_program->run( _gpp.get() );
+            auto vps = root_program->run( _gpp.get() ); /// This must be the first an unique run of the root
             _evaluated_nodes = 0;
             auto root = std::make_shared<Node>(
                     std::move(root_program),
@@ -250,12 +240,12 @@ namespace search {
                     child->set_f(f(child.get()));
                     child->set_id(_evaluated_nodes++);
 
-                    if (is_goal(child.get())) {
+                    if (is_goal(child.get(), false)) {
                         std::cout << "[INFO] Solution candidate!\n" << child->to_string();
                         // if the program solves all instances finish
                         bool is_progressive = _gpp->is_progressive();
                         _gpp->set_progressive(false);
-                        bool all_goal = is_goal(child.get());
+                        bool all_goal = is_goal(child.get(), true);
                         _gpp->set_progressive(is_progressive);
                         if (all_goal) {
                             child->set_f(f(child.get()));
@@ -270,15 +260,15 @@ namespace search {
                             // activate it
                             _gpp->activate_instance(_last_failed_instance_idx);
                             // reevaluate queue
-                            std::priority_queue<std::shared_ptr<Node>, std::vector<std::shared_ptr<Node> >, NodeComparator> new_open;
-                            while(not _open.empty()){
-                                auto node = _open.top();
-                                _open.pop();
+                            std::priority_queue<std::shared_ptr<Node>, std::vector<std::shared_ptr<Node> >, NodeComparator> old_open;
+                            std::swap(old_open, _open);
+                            while(not old_open.empty()){
+                                auto node = old_open.top();
+                                node->get_program()->run(_gpp.get()); // run again the program
+                                old_open.pop();
                                 node->set_f(f(node.get()));
-                                new_open.push(std::move(node));
+                                add_node(node);
                             }
-                            //child->set_f(f(child.get())); // FIXME: shouldn't be pushed into the queue...
-                            std::swap(new_open, _open);
                             std::cout << " done!\n";
                         }
                     }

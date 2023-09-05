@@ -58,6 +58,7 @@ namespace utils {
                 parse_synthesis_arguments(arg_map); // ToDo: this must be an argument option
                 // Set global vars
                 _max_val = 100;
+                _infinite_detection = _infinite_detection or (_theory_name == "assembler");
             }
             else if (it_mode->second[0] == "validation-prog" or it_mode->second[0] == "validation-cpp") {
                 parse_validation_arguments(arg_map);
@@ -96,7 +97,7 @@ namespace utils {
                                                                  " it loads a theory of instructions that builds the program grammar;"
                                                                  " default: cpp\n"
                                                                  "  " + _eval_func_stype + ", " + _eval_func_type +
-                    " [{lc, ilc, ed, mnl, mll, llc}]   only available in \"synthesis\" mode; "
+                    " [{lc, ilc, ed, mnl, mll, llc, ac, astar, wastar}]   only available in \"synthesis\" mode; "
                     "list of functions to evaluate nodes in the search; "
                     "default: [ed, ilc]\n"
                     "      lc (loop counter): minimize the number of loops in the program\n"
@@ -113,6 +114,9 @@ namespace utils {
                     "      llc (loop line counter): maximize the sum of all loop sizes in the program\n"
                     "      lmc (landmark counter): count the number of unachieved landmarks during program execution\n"
                     "      mi (max ifs): maximize the number of IF instructions\n"
+                    "      ac (accumulated cost): sum of all applied instructions\n"
+                    "      astar (ed+ac): euclidean plus accumulated cost in an A* fashion\n"
+                    "      wastar (5*ed+ac): weighted euclidean plus accumulated cost in an WA* fashion, default w=5\n"
                     "  " + _program_stype + ", " + _program_type +
                     " PROGRAM_FILE.prog   required in \"validation-*\" modes\n"
                     "  " + _infinite_detection_stype + ", " + _infinite_detection_type +
@@ -237,6 +241,11 @@ namespace utils {
                         helper("Exactly one boolean expected but " + std::to_string(arg_vals.size()) + " found.");
                     parse_verbosity(arg_vals[0]);
                 }
+                else if(arg_type == _save_pddl_plans_ntype){
+                    if(arg_vals.size() != 1u)
+                        helper("Exactly one boolean expected but " + std::to_string(arg_vals.size()) + " found.");
+                    parse_save_pddl_plans(arg_vals[0]);
+                }
                 // Check if the argument type is an unrecognized token
                 else helper("Unrecognized input token: " + arg_type);
             }
@@ -256,6 +265,8 @@ namespace utils {
                 _num_extra_pointers = 0;
             if(arg_map.find(_verbosity_ntype) == arg_map.end())
                 _verbose = false;
+            if(arg_map.find(_save_pddl_plans_ntype) == arg_map.end())
+                _save_pddl_plans = false;
 
             // Parse from _program_file_name the number of _program_lines
             _program_lines = utils::count_non_empty_file_lines(_program_file_name);
@@ -365,6 +376,13 @@ namespace utils {
             _verbose = it->second;
         }
 
+        void parse_save_pddl_plans(const std::string &str_save_pddl_plans){
+            auto it = _valid_boolean.find(str_save_pddl_plans);
+            if (it == _valid_boolean.end())
+                helper("Expected boolean value for verbose argument but " + str_save_pddl_plans + " found.");
+            _save_pddl_plans = it->second;
+        }
+
         [[nodiscard]] std::string get_mode() const {
             return _mode;
         }
@@ -423,6 +441,10 @@ namespace utils {
             return _verbose;
         }
 
+        [[nodiscard]] bool is_save_pddl_plans() const{
+            return _save_pddl_plans;
+        }
+
     private:
         [[nodiscard]] static std::string normalize_arg_type(const std::string &arg_type) {
             if (arg_type == _help_type or arg_type == _help_stype) return _help_ntype;
@@ -439,6 +461,7 @@ namespace utils {
             if (arg_type == _progressive_type or arg_type == _progressive_stype) return _progressive_ntype;
             if (arg_type == _output_file_type or arg_type == _output_file_stype) return _output_file_ntype;
             if (arg_type == _verbosity_type or arg_type == _verbosity_stype) return _verbosity_ntype;
+            if (arg_type == _save_pddl_plans_type or arg_type == _save_pddl_plans_stype) return _save_pddl_plans_ntype;
             return _unrecognized_token;
         }
 
@@ -456,6 +479,7 @@ namespace utils {
         bool _progressive; // optional for synthesis only (default: false)
         std::string _output_file;  // optional for synthesis only (default: "")
         bool _verbose; // optional verbose output
+        bool _save_pddl_plans; // optional save pddl action plans in a file
 
         /// Constant argument types (requires C++17)
         inline static const std::string _unrecognized_token = ""; // default value for unrecognized tokens
@@ -495,12 +519,16 @@ namespace utils {
         inline static const std::string _verbosity_type = "--verbosity";
         inline static const std::string _verbosity_stype = "-v"; // short type
         inline static const std::string _verbosity_ntype = "verbosity"; // normalized type
+        inline static const std::string _save_pddl_plans_type = "--save-pddl-plans";
+        inline static const std::string _save_pddl_plans_stype = "-plans"; // short type
+        inline static const std::string _save_pddl_plans_ntype = "plans"; // normalized type
 
         /// Constant argument values (requires C++17)
         inline static const std::set<std::string> _valid_modes = {"synthesis", "validation-prog", "validation-cpp"};
         inline static const std::set<std::string> _valid_evaluation_functions = {"lc", "ed", "hd", "chd", "jd", "nei",
-                                                                                 "mri", "mnl", "mll", "llc", "ilc", "lmc",
-                                                                                 "hmax", "hadd", "mi", "cwed", "ac", "dll"};
+                                                                                 "mri", "mnl", "mll", "llc", "ilc",
+                                                                                 "lmc", "hmax", "hadd", "mi", "cwed",
+                                                                                 "ac", "dll", "astar", "wastar"};
         inline static const std::set<std::string> _valid_theories = {"assembler", "cpp", "bitvec", "actions_strips",
                                                                      "actions_adl", "actions_cell", "actions_ram"};
         inline static const std::map<std::string, bool> _valid_boolean = {{"True", true},

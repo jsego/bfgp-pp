@@ -1,0 +1,54 @@
+{
+"in_folder": "domains/aij23/generators/",
+"out_folder": "domains/aij23/validation/",
+"domains": [
+	{"name": "blocks_ontable",
+     "args": "-f 12 -t 111"     
+    },    
+	{"name": "corridor",
+     "args": "-f 13 -t 112"
+    },    
+	{"name": "fibonacci",
+     "args": "-f 12 -t 44"     
+    },    
+	{"name": "find",
+     "args": "-f 100 -s 10 -t 1090"
+    },
+    {"name": "grid",
+      "args": "-f 12 -t 111 -s 2"
+    },
+	{"name": "gripper",
+     "args": "-f 12 -t 1011"     
+    },
+    {"name": "michalski_trains",
+      "args": ""
+    },
+    {"name": "miconic",
+      "args": "-f 12 -t 111"
+    },
+	{"name": "reverse", 
+     "args": "-m validation -f 12 -s 1 -t 111"
+    },    
+	{"name": "satellite", 
+     "args": "-f 11 -t 30"
+    },   
+	{"name": "select", 
+     "args": "-m validation -f 100 -s 10 -t 1090"
+    },
+    {"name": "sieve_of_erathostenes",
+      "args": "-f 15 -t 114"
+    },
+	{"name": "spanner",
+     "args": "-f 12 -t 111"     
+    },    
+	{"name": "sorting",
+     "args": "-m validation -f 12 -s 1 -t 111"     
+    },    
+	{"name": "triangular_sum",
+     "args": "-f 12 -t 1011"     
+    },
+	{"name": "visitall",
+     "args": "-f 12 -t 61"     
+    }
+]
+}

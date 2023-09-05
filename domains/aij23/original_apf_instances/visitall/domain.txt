@@ -1,0 +1,41 @@
+[DOMAIN]: VISITALL
+
+[TYPES]:
+row:object
+column:object
+[FUNCTIONS]:
+at_row(?r:row)
+at_column(?c:column)
+connected_rows(?r1:row,?r2:row)
+connected_columns(?c1:column,?c2:column)
+visited(?r:row,?c:column)
+
+[ACTIONS]:
+[ACTION]: move_row(?r1:row,?r2:row)
+[TYPE]: memory
+[PRECONDITIONS]:
+(connected_rows(?r1,?r2)=1)
+(at_row(?r1)=1)
+(at_row(?r2)=0)
+[EFFECTS]:
+(at_row(?r1)=0)
+(at_row(?r2)=1)
+
+[ACTION]: move_column(?c1:column,?c2:column)
+[TYPE]: memory
+[PRECONDITIONS]:
+(connected_columns(?c1,?c2)=1)
+(at_column(?c1)=1)
+(at_column(?c2)=0)
+[EFFECTS]:
+(at_column(?c1)=0)
+(at_column(?c2)=1)
+
+[ACTION]: visit(?r:row,?c:column)
+[TYPE]: memory
+[PRECONDITIONS]:
+(at_row(?r)=1)
+(at_column(?c)=1)
+(visited(?r,?c)=0)
+[EFFECTS]:
+(visited(?r,?c)=1)

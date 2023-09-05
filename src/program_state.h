@@ -88,6 +88,10 @@ public:
 		return ret;
 	}
 
+    [[nodiscard]] size_t hash() const{
+        return std::hash<std::string>{}(to_string());
+    }
+
 private:
     size_t _line;
     std::vector<variables::Pointer*> _pointers;  // owned by Generalized Domain

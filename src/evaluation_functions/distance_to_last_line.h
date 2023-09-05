@@ -18,7 +18,8 @@ namespace evaluation_functions {
         value_t compute(Program *p, GeneralizedPlanningProblem *gpp) override {
             /// Return the minimum distance to last line for all non-terminated
             /// program executions, otherwise is 0
-            auto vps = p->run( gpp );
+            //auto vps = p->run( gpp );
+            auto vps = p->get_program_states();
 
             // Error when running the program over active instances
             if (vps.empty()) return INF;

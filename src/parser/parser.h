@@ -3,6 +3,7 @@
 
 #include "../utils/common.h"
 #include "../utils/bfgp_utils.h"
+#include "../utils/argument_parser.h"
 #include "../variables/variable.h"
 #include "../state.h"
 
@@ -227,14 +228,15 @@ namespace parser {
         static std::unique_ptr<expressions::conditions::Condition> make_condition(
                 const std::string &name,
                 std::unique_ptr<variables::Variable> lhs,
-                std::unique_ptr<variables::Variable> rhs ){
+                std::unique_ptr<variables::Variable> rhs,
+                utils::ArgumentParser* arg_parser = nullptr){
             /// Factory method of conditions
             if( ">=" == name ) return std::make_unique<expressions::conditions::GreaterEqual>( std::move(lhs), std::move(rhs) );
             else if( "<=" == name ) return std::make_unique<expressions::conditions::LesserEqual>( std::move(lhs), std::move(rhs) );
             else if( ">" == name ) return std::make_unique<expressions::conditions::Greater>( std::move(lhs), std::move(rhs) );
             else if( "<" == name ) return std::make_unique<expressions::conditions::Lesser>( std::move(lhs), std::move(rhs) );
             else if( "=" == name ) return std::make_unique<expressions::conditions::Equals>( std::move(lhs), std::move(rhs) );
-            else if( "+" == name ) return std::make_unique<expressions::conditions::Add>( std::move(lhs), std::move(rhs) );
+            else if( "+" == name ) return std::make_unique<expressions::conditions::Add>( std::move(lhs), std::move(rhs), (arg_parser?arg_parser->get_max_val():100) );
             else if( "-" == name ) return std::make_unique<expressions::conditions::Subtract>( std::move(lhs), std::move(rhs) );
             else if( "!=" == name ) return std::make_unique<expressions::conditions::Different>( std::move(lhs), std::move(rhs) );
             return nullptr;
@@ -519,7 +521,7 @@ namespace parser {
             dom->add_function(std::move(func_uptr));
         }
 
-        static void parse_action(Domain *dom, std::ifstream &ifs){
+        static void parse_action(Domain *dom, std::ifstream &ifs, utils::ArgumentParser* arg_parser = nullptr){
             std::string word;
             ifs >> word;
             /// Action signature expected - split the signature into name and arguments
@@ -553,7 +555,7 @@ namespace parser {
                                         ERROR_PARSING_DOMAIN);
                 auto var1(make_variable(expr_vec_str[0], dom, action.get()));
                 auto var2 = (make_variable(expr_vec_str[2], dom, action.get()));
-                action->add_condition(make_condition(expr_vec_str[1], std::move(var1), std::move(var2)));
+                action->add_condition(make_condition(expr_vec_str[1], std::move(var1), std::move(var2), arg_parser));
             }
 
             if(word != "[EFFECTS]:")
@@ -571,7 +573,8 @@ namespace parser {
             dom->add_action(std::move(action));
         }
 
-        static std::unique_ptr<expressions::conditions::Condition> make_goal_condition(Instance *ins, const std::string &word){
+        static std::unique_ptr<expressions::conditions::Condition> make_goal_condition(
+                Instance *ins, const std::string &word, utils::ArgumentParser* arg_parser = nullptr){
             auto expr_vec_str = get_expression(word);  // (lhs_str, op_str, rhs_str)
             if(_valid_conditions.find(expr_vec_str[1]) == _valid_conditions.end())
                 utils::system_error("Goal condition operator " + expr_vec_str[1] +
@@ -614,11 +617,11 @@ namespace parser {
                                             " is not a valid constant value or state variable",
                                     ERROR_PARSING_INSTANCE);
             }
-            return make_condition(expr_vec_str[1], std::move(lhs), std::move(rhs));
+            return make_condition(expr_vec_str[1], std::move(lhs), std::move(rhs), arg_parser);
         }
 
         // In charge of parsing and creating a domain
-        static bool parse_domain(Domain *dom, const std::string &file_name) {
+        static bool parse_domain(Domain *dom, const std::string &file_name, utils::ArgumentParser* arg_parser = nullptr) {
             std::ifstream ifs(file_name.c_str());
             if (!ifs) utils::system_error("File '" + file_name + "' does not exist.", ERROR_INPUT);
             std::string word;
@@ -665,7 +668,7 @@ namespace parser {
             else if(ifs) { // Otherwise, if the stream is active keep parsing actions
                 ifs >> word;
                 while (ifs and word == "[ACTION]:") {
-                    parse_action(dom, ifs);  // ifs progresses inside parse_action
+                    parse_action(dom, ifs, arg_parser);  // ifs progresses inside parse_action
                 }
             }
 
@@ -676,7 +679,7 @@ namespace parser {
         }
 
 
-        static void parse_instance(Instance *ins, const std::string &file_name = "") {
+        static void parse_instance(Instance *ins, const std::string &file_name = "", utils::ArgumentParser* arg_parser = nullptr) {
             std::ifstream ifs(file_name.c_str());
             if (!ifs) utils::system_error("File '" + file_name + "' does not exist.", ERROR_INPUT);
             std::string word;
@@ -713,7 +716,7 @@ namespace parser {
                 utils::system_error("Unexpected keyword " + word + " expected [GOAL]:",
                                     ERROR_PARSING_INSTANCE);
             while(ifs>>word)
-                ins->add_goal_condition(make_goal_condition(ins, word));
+                ins->add_goal_condition(make_goal_condition(ins, word, arg_parser));
         }
 
     private:

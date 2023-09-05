@@ -18,7 +18,8 @@ namespace evaluation_functions {
         value_t compute(Program *p, GeneralizedPlanningProblem *gpp) override {
             /// Computing squared distance to goal after each execution.
             /// This is closed-world assumption and that goals are equalities
-            auto vps = p->run( gpp );
+            //auto vps = p->run( gpp );
+            auto vps = p->get_program_states();
 
             // Error when running the program over active instances
             if (vps.empty()) return INF;

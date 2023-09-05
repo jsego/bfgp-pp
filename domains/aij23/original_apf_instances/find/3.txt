@@ -1,0 +1,19 @@
+[INSTANCE]: find-4b
+[DOMAIN]: FIND
+
+[OBJECTS]:
+p0:object
+p1:object
+p2:object
+p3:object
+
+[INIT]:
+(target()=0)
+(counter()=0)
+(vector(p0)=2)
+(vector(p1)=2)
+(vector(p2)=1)
+(vector(p3)=2)
+
+[GOAL]:
+(counter()=0)

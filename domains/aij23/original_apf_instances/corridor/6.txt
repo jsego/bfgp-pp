@@ -1,0 +1,30 @@
+[INSTANCE]: corridor-7
+[DOMAIN]: CORRIDOR
+
+[OBJECTS]:
+l1:object
+l2:object
+l3:object
+l4:object
+l5:object
+l6:object
+l7:object
+
+[INIT]:
+(at(l5)=1)
+(goal_at(l3)=1)
+(adjacent(l1,l2)=1)
+(adjacent(l2,l1)=1)
+(adjacent(l2,l3)=1)
+(adjacent(l3,l2)=1)
+(adjacent(l3,l4)=1)
+(adjacent(l4,l3)=1)
+(adjacent(l4,l5)=1)
+(adjacent(l5,l4)=1)
+(adjacent(l5,l6)=1)
+(adjacent(l6,l5)=1)
+(adjacent(l6,l7)=1)
+(adjacent(l7,l6)=1)
+
+[GOAL]:
+(at(l3)=1)

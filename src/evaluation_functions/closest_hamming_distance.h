@@ -21,7 +21,9 @@ namespace evaluation_functions {
             // ToDo: this is currently wrong. Run p only once, then compare the goal condition over each ptr_res_i
             //  memory location, and get the minimum for each instance. Then, accumulate all the results.
 
-            auto vps = p->run(gpp);
+            //auto vps = p->run( gpp );
+            auto vps = p->get_program_states();
+
             vec_value_t best_res(gpp->get_num_instances(), MaxValue);
             auto gd = gpp->get_generalized_domain();
             auto  pointers = gd->get_pointers(); // get all pointer ids of type object (possibly create a function to get pointers of a type)

@@ -1,0 +1,23 @@
+[INSTANCE]: sorting-5
+[DOMAIN]: SORTING
+
+[OBJECTS]:
+p0:object
+p1:object
+p2:object
+p3:object
+p4:object
+
+[INIT]:
+(vector(p0)=2)
+(vector(p1)=89)
+(vector(p2)=49)
+(vector(p3)=84)
+(vector(p4)=40)
+
+[GOAL]:
+(vector(p0)=2)
+(vector(p1)=40)
+(vector(p2)=49)
+(vector(p3)=84)
+(vector(p4)=89)
