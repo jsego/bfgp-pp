@@ -86,5 +86,5 @@ TEST(ProgramTest, EmptyPartialFullProgram){
                  "(carry(b1,left)=0) (carry(b2,left)=0) (carry(b3,left)=0) (carry(b4,left)=0) (carry(b5,left)=0) "
                  "(carry(b6,left)=0)", ps_full[0]->to_string().c_str());
     // Test the goal condition holds in the current state
-    EXPECT_TRUE(raw_gd->get_instruction("end")->is_applicable(gpp->get_instance(0), ps_full[0].get()));
+    EXPECT_TRUE(raw_gd->get_instruction("end")->is_applicable(gpp->get_instance(0), ps_full[0]));
 }
