@@ -82,6 +82,7 @@ TEST(EvaluationFunctionsTest, AssemblerAndCPPEvaluationFunctions){
     /// END - source code taken from program.cpp
 
     // Tests - empty program (all balls at origin)
+    program->run(gpp.get());
     EXPECT_EQ(6, ef_euclidean_dist->compute(program.get(), gpp.get()));
     EXPECT_EQ(0, ef_inv_loop_counter->compute(program.get(), gpp.get()));
     EXPECT_EQ(0, ef_loop_counter->compute(program.get(), gpp.get()));
@@ -94,6 +95,7 @@ TEST(EvaluationFunctionsTest, AssemblerAndCPPEvaluationFunctions){
     // Tests - partial program (1 ball at goal, 5 at origin)
     for(size_t program_line = 0; program_line < 5; program_line++)
         program->set_instruction(program_line, raw_gd->get_instruction(vec_instructions[program_line]));
+    program->run(gpp.get());
     EXPECT_EQ(5, ef_euclidean_dist->compute(program.get(), gpp.get()));
     EXPECT_EQ(0, ef_inv_loop_counter->compute(program.get(), gpp.get()));
     EXPECT_EQ(0, ef_loop_counter->compute(program.get(), gpp.get()));
@@ -106,6 +108,8 @@ TEST(EvaluationFunctionsTest, AssemblerAndCPPEvaluationFunctions){
     // Tests - full program (all balls finish at goal)
     for(size_t program_line = 5; program_line < vec_instructions.size(); program_line++)
         program->set_instruction(program_line, raw_gd->get_instruction(vec_instructions[program_line]));
+
+    program->run(gpp.get());
     EXPECT_EQ(0, ef_euclidean_dist->compute(program.get(), gpp.get()));
     EXPECT_EQ(-1, ef_inv_loop_counter->compute(program.get(), gpp.get()));
     EXPECT_EQ(1, ef_loop_counter->compute(program.get(), gpp.get()));
