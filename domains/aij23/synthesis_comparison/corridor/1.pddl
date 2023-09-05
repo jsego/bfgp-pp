@@ -1,0 +1,8 @@
+(define (problem corridor_1)
+  (:domain corridor)
+  (:objects l1 l2 l3 - object )
+  (:init (at l1)
+    (goal_at l3)
+    (adjacent l1 l2)    
+(adjacent l2 l3))
+  (:goal (and (at l3))))

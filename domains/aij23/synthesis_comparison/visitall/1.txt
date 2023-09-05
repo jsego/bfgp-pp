@@ -1,0 +1,21 @@
+[INSTANCE]: visitall_1
+[DOMAIN]: visitall
+
+[OBJECTS]:
+r1:row
+r2:row
+c1:column
+c2:column
+
+[INIT]:
+(at_row(r1)=1)
+(at_column(c1)=1)
+(visited(r1,c1)=1)
+(adjacent_rows(r1,r2)=1)
+(adjacent_columns(c1,c2)=1)
+
+[GOAL]:
+(visited(r1,c1)=1)
+(visited(r1,c2)=1)
+(visited(r2,c1)=1)
+(visited(r2,c2)=1)

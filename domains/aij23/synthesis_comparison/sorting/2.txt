@@ -1,0 +1,17 @@
+[INSTANCE]: sorting-3
+[DOMAIN]: SORTING
+
+[OBJECTS]:
+p0:object
+p1:object
+p2:object
+
+[INIT]:
+(vector(p0)=40)
+(vector(p1)=15)
+(vector(p2)=72)
+
+[GOAL]:
+(vector(p0)=15)
+(vector(p1)=40)
+(vector(p2)=72)

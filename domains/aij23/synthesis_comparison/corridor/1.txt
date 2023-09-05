@@ -1,0 +1,16 @@
+[INSTANCE]: corridor_1
+[DOMAIN]: corridor
+
+[OBJECTS]:
+l1:object
+l2:object
+l3:object
+
+[INIT]:
+(at(l1)=1)
+(goal_at(l3)=1)
+(adjacent(l1,l2)=1)
+(adjacent(l2,l3)=1)
+
+[GOAL]:
+(at(l3)=1)

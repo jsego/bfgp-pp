@@ -1,0 +1,32 @@
+[INSTANCE]: select-6
+[DOMAIN]: SELECT
+
+[OBJECTS]:
+p0:object
+p1:object
+p2:object
+p3:object
+p4:object
+p5:object
+
+[INIT]:
+(vector(p0)=46)
+(selected(p0)=0)
+(vector(p1)=55)
+(selected(p1)=0)
+(vector(p2)=69)
+(selected(p2)=0)
+(vector(p3)=1)
+(selected(p3)=0)
+(vector(p4)=87)
+(selected(p4)=0)
+(vector(p5)=72)
+(selected(p5)=0)
+
+[GOAL]:
+(selected(p0)=0)
+(selected(p1)=0)
+(selected(p2)=0)
+(selected(p3)=1)
+(selected(p4)=0)
+(selected(p5)=0)
