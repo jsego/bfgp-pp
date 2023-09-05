@@ -20,6 +20,14 @@ namespace instructions{
             return _ptr;
         }
 
+        [[nodiscard]] size_t get_original_line() const{
+            return _orig_line;
+        }
+
+        [[nodiscard]] int get_modifier() const{
+            return _mod;
+        }
+
         bool is_applicable(Instance *ins, ProgramState* ps ) const override{
             /// An ENDFOR instruction is always applicable
             return true;

@@ -207,6 +207,18 @@ namespace factories {
         return engine;
     }
 
+    [[nodiscard]] bool check_endfor_syntactic_constraints(Program* prog, size_t line, instructions::EndFor* endfor){
+        /// Returns true if the syntactic constraints are valid, otherwise it returns false
+        auto orig_line = endfor->get_original_line();
+        if(line <= orig_line) return false;
+        auto for_ins = dynamic_cast<instructions::For*>(prog->get_instruction(orig_line));
+        if(nullptr == for_ins) return false;
+        if(line != for_ins->get_destination_line()) return false;
+        if(for_ins->get_pointer() != endfor->get_pointer()) return false;
+        if(for_ins->get_modifier() != endfor->get_modifier()) return false;
+        return true;
+    }
+
     std::unique_ptr<Program> make_program( utils::ArgumentParser* arg_parser, GeneralizedPlanningProblem *gpp){
         auto prog_ins = utils::read_program_instructions(arg_parser->get_program_file_name());
         auto prog_lines = int(prog_ins.size());
@@ -214,19 +226,25 @@ namespace factories {
         auto gd = gpp->get_generalized_domain();
         if(arg_parser->is_verbose())
             std::cout << gd->to_string(true) << "\n";
-//auto th = std::make_unique<theory::ActionSchemas>();
-//prog->set_instruction(prog_lines-1, gd->get_instruction("end"));
+        auto theory = make_theory(arg_parser);
         for( int j = 0; j < prog_lines; j++ ){
             if(prog_ins[j] == "empty") continue; // skip empty instructions
             auto ins = gd->get_instruction(prog_ins[j]);
             if( ins == nullptr )
                 utils::system_error("Instruction " + prog_ins[j] + " not found.",
                                     ERROR_INSTRUCTION_DOES_NOT_EXIST);
-//std::cout << "Checking " << ins->to_string(false) << "... synt: " << th->check_syntax_constraints(prog.get(), j, ins) <<
-//" sem: " << th->check_semantic_constraints(gpp,prog.get(),j,ins) << "\n";
+            auto endfor_ins = dynamic_cast<instructions::EndFor*>(ins);
+            if(endfor_ins and (not check_endfor_syntactic_constraints(prog.get(), j, endfor_ins)))
+                utils::system_error("In Theory "+theory->get_name()+", "+prog_ins[j]+" is syntactically unreachable.",
+                                    ERROR_PROGRAM_DOES_NOT_EXIST);
+            if(endfor_ins){} /// endfor syntactic constraints are valid, hence no need to check syntax/semantic constr.
+            else if(not theory->check_syntax_constraints(prog.get(), j, ins))
+                utils::system_error("In Theory "+theory->get_name()+", "+prog_ins[j]+" is syntactically unreachable.",
+                                    ERROR_PROGRAM_DOES_NOT_EXIST);
+            else if(not theory->check_semantic_constraints(gpp, prog.get(), j, ins))
+                utils::system_error("In Theory "+theory->get_name()+", "+prog_ins[j]+" is semantically unreachable.",
+                                    ERROR_PROGRAM_DOES_NOT_EXIST);
             prog->set_instruction(j, ins);
-//auto ins_for = dynamic_cast<instructions::For*>(ins);
-//if(ins_for){prog->set_instruction(ins_for->get_destination_line(), gd->get_instruction(prog_ins[ins_for->get_destination_line()]));}
         }
         return prog;
     }

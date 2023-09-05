@@ -84,8 +84,6 @@ namespace theory{
 
         [[nodiscard]] bool check_syntax_constraints(Program *p, size_t program_line, instructions::Instruction *new_ins) override{
             /// Issue #8: do not loop over single object pointers (ToDo: no access to pointer domain from the instance)
-            //bool print_data = false;
-            //if(program_line == 0 and new_ins->get_name(true)=="for(ptr_object_0++,3)")
 
             auto endfor_ins = dynamic_cast<instructions::EndFor*>(new_ins);
             if(endfor_ins) return false;
@@ -147,11 +145,13 @@ namespace theory{
 
             /// 3. If it is a PointerAction, it must be checked that the pointer is not inside a loop that modifies it
             auto pa = dynamic_cast<instructions::PointerAction*>(new_ins);
-            if (not is_cond and pa) { /// conditionals should not be checked, since they do not modify pointers
+            if ((not is_cond) and pa) { /// conditionals should not be checked, since they do not modify pointers
                 auto pa_ptrs = pa->get_pointers();
-                for(auto next_line = program_line+1; next_line < p->get_num_instructions(); next_line++){
-                    auto next_endfor = dynamic_cast<instructions::EndFor*>(p->get_instruction(next_line));
-                    if(next_endfor and next_endfor->get_pointer() == pa_ptrs[0]) return false;
+                for(int prev_line = int(program_line)-1; prev_line >= 0; prev_line--){
+                    auto prev_for = dynamic_cast<instructions::For*>(p->get_instruction(prev_line));
+                    if(nullptr == prev_for) continue;
+                    if((prev_for->get_destination_line() > program_line) and (prev_for->get_pointer() == pa_ptrs[0]))
+                        return false;
                 }
             }
 

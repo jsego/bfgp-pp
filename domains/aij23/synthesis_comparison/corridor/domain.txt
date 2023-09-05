@@ -1,0 +1,29 @@
+[DOMAIN]: corridor
+
+[TYPES]:
+
+[FUNCTIONS]:
+at(?x0:object)
+adjacent(?x1:object,?x2:object)
+goal_at(?x3:object)
+
+[ACTIONS]:
+[ACTION]: move_right(?from:object,?to:object)
+[TYPE]: memory
+[PRECONDITIONS]:
+(adjacent(?from,?to)=1)
+(at(?from)=1)
+(at(?to)=0)
+[EFFECTS]:
+(at(?from)=0)
+(at(?to)=1)
+
+[ACTION]: move_left(?from:object,?to:object)
+[TYPE]: memory
+[PRECONDITIONS]:
+(adjacent(?to,?from)=1)
+(at(?from)=1)
+(at(?to)=0)
+[EFFECTS]:
+(at(?from)=0)
+(at(?to)=1)
