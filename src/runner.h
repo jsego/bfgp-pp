@@ -27,6 +27,13 @@ namespace runner{
             for(size_t instance_id = 1; instance_id < gpp->get_num_instances(); ++instance_id)
                 gpp->deactivate_instance(instance_id);
         }
+        auto mode_name = arg_parser->get_mode();
+        std::vector<std::unique_ptr<Program>> programs;
+        if(mode_name == "repair"){
+            programs = factories::make_programs(arg_parser.get(), gpp.get());
+            if((int)programs[programs.size()-1]->get_num_instructions() != arg_parser->get_program_lines())
+                arg_parser->helper("The input program and the input number of program lines differ");
+        }
 
         auto engine = factories::make_engine(arg_parser.get(), std::move(gpp));
         stats_info->add_timer("engine");
@@ -34,7 +41,7 @@ namespace runner{
         stats_info->add_info_msg("Searching...");
 
         // Call the engine solver to search for a generalized plan (or program)
-        auto resulting_node = engine->solve();
+        auto resulting_node = engine->solve(std::move(programs));
         stats_info->add_timer("search");
 
         auto dest_folder_file =
@@ -184,7 +191,9 @@ namespace runner{
                                                             arg_parser->get_evaluation_function_names());
         auto dest_file_name = utils::join(dest_folder_file);
 
-        auto prog = factories::make_program(arg_parser.get(), gpp.get());
+        auto programs = factories::make_programs(arg_parser.get(), gpp.get());
+        assert(not programs.empty());
+        std::unique_ptr<Program> prog = std::move(programs[programs.size()-1]); // pick only latest program
 
         stats_info->add_timer("program");
         stats_info->timers_info("Program loaded:", "gpp", "program");

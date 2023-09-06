@@ -202,7 +202,7 @@ namespace theory{
                 }
 
                 /// 4.X This must be the last constraint to check
-                // Check at this point if the loop pattern is new, getting the current loop pattern variables and
+                /*// Check at this point if the loop pattern is new, getting the current loop pattern variables and
                 // adding them to the partial program loop pattern.
                 auto new_loop_pattern = get_loops_pattern(p);
                 // Add new tuple
@@ -211,18 +211,18 @@ namespace theory{
                                                               program_line,
                                                               dest_line));
                 if(_loop_patterns.find(new_loop_pattern) != _loop_patterns.end())
-                    return false;
+                    return false;*/
             }
 
             // Any other case is correct
             return true;
         }
 
-        void update(Program *p, instructions::Instruction *last_ins) override{
+        /*void update(Program *p, instructions::Instruction *last_ins) override{
             auto ins_for = dynamic_cast<instructions::For*>(last_ins);
             if(ins_for)
                 _loop_patterns.insert(get_loops_pattern(p));
-        }
+        }*/
 
     private:
         std::set<std::vector<loop_pattern_t>> _loop_patterns;

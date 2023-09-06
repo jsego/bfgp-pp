@@ -54,7 +54,7 @@ namespace utils {
             if (_valid_modes.find(it_mode->second[0]) == _valid_modes.end())
                 helper("The mode \"" + it_mode->second[0] + "\" is invalid.");
 
-            if (it_mode->second[0] == "synthesis") {
+            if (it_mode->second[0] == "synthesis" or it_mode->second[0] == "repair") {
                 parse_synthesis_arguments(arg_map); // ToDo: this must be an argument option
                 // Set global vars
                 _max_val = 100;
@@ -82,8 +82,9 @@ namespace utils {
                     "argument options:\n"
                     "  " + _help_stype + ", " + _help_type + "   shows this message help and exit\n"
                                                              "  " + _mode_stype + ", " + _mode_type +
-                    " {synthesis, validation-prog, validation-cpp}   exactly one required parameter:\n"
+                    " {synthesis, repair, validation-prog, validation-cpp}   exactly one required parameter:\n"
                     "      synthesis: computes a planning program\n"
+                    "      repair: computes a planning program from a base program\n"
                     "      validation-prog: interprets an input program and validates it on a set of instances\n"
                     "      validation-cpp: parses a program and translates it to c++ code, and validates it on a set of instances\n"
                     "  " + _program_lines_stype + ", " + _program_lines_type +
@@ -144,6 +145,9 @@ namespace utils {
         }
 
         void parse_synthesis_arguments(const std::map<std::string, vec_str_t > &arg_map) {
+            // save whether the mode is 'repair'
+            bool is_repair_mode = (arg_map.find(_mode_ntype)->second[0] == "repair");
+
             for (const auto &m: arg_map) {
                 auto arg_type = m.first;
                 auto arg_vals = m.second;
@@ -183,6 +187,11 @@ namespace utils {
                         helper("Exactly one boolean expected but " + std::to_string(arg_vals.size()) + " found.");
                     parse_verbosity(arg_vals[0]);
                 }
+                else if(is_repair_mode and (arg_type == _program_ntype)){
+                    if (arg_vals.size() != 1u)
+                        helper("Only one program expected but " + std::to_string(arg_vals.size()) + " found.");
+                    parse_program(arg_vals[0]);
+                }
                 // Check if the argument type is an unrecognized token
                 else helper("Unrecognized input token: " + arg_type);
             }
@@ -192,6 +201,8 @@ namespace utils {
                 helper("Program lines are required.");
             if (arg_map.find(_problem_folder_ntype) == arg_map.end())
                 helper("Problem folder is required.");
+            if (is_repair_mode and arg_map.find(_program_ntype) == arg_map.end())
+                helper("Program is required.");
 
             // Set default values for the rest if not filled by command line
             if (arg_map.find(_theory_ntype) == arg_map.end())
@@ -468,16 +479,16 @@ namespace utils {
         /// Accessible data-structures
         std::string _mode; // required in all modes
         std::string _problem_folder; // required in all modes
-        vec_str_t _evaluation_function_names; // optional for synthesis only (default: [ed, ilc])
-        std::string _theory_name; // optional for synthesis only (default: cpp)
-        size_t _program_lines; // required in synthesis but used in both (in validation mode is inferred from the program)
+        vec_str_t _evaluation_function_names; // optional for synthesis and repair (default: [ed, ilc])
+        std::string _theory_name; // optional for synthesis and repair (default: cpp)
+        size_t _program_lines; // required in synthesis and repair but used in both (in validation mode is inferred from the program)
         std::string _program_file_name; // required in any validation mode
         bool _infinite_detection; // optional for validation-prog mode (default: false)
         bool _carry_flag;
         value_t _max_val;
         int _num_extra_pointers;  // number of extra pointers per argument type
-        bool _progressive; // optional for synthesis only (default: false)
-        std::string _output_file;  // optional for synthesis only (default: "")
+        bool _progressive; // optional for synthesis and repair only (default: false)
+        std::string _output_file;  // optional for synthesis and repair only (default: "")
         bool _verbose; // optional verbose output
         bool _save_pddl_plans; // optional save pddl action plans in a file
 
@@ -524,7 +535,10 @@ namespace utils {
         inline static const std::string _save_pddl_plans_ntype = "plans"; // normalized type
 
         /// Constant argument values (requires C++17)
-        inline static const std::set<std::string> _valid_modes = {"synthesis", "validation-prog", "validation-cpp"};
+        inline static const std::set<std::string> _valid_modes = {"synthesis",
+                                                                  "repair",
+                                                                  "validation-prog",
+                                                                  "validation-cpp"};
         inline static const std::set<std::string> _valid_evaluation_functions = {"lc", "ed", "hd", "chd", "jd", "nei",
                                                                                  "mri", "mnl", "mll", "llc", "ilc",
                                                                                  "lmc", "hmax", "hadd", "mi", "cwed",

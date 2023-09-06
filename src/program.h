@@ -212,7 +212,7 @@ public:
         return ptr_assigned;
     }
 
-    std::vector<ProgramState*> run(GeneralizedPlanningProblem *gpp, bool save_pddl_plans = false){
+    [[maybe_unused]] std::vector<ProgramState*> run(GeneralizedPlanningProblem *gpp, bool save_pddl_plans = false){
         reset_performance_variables();
         if(save_pddl_plans){
             _pddl_plans.clear();

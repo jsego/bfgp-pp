@@ -207,7 +207,7 @@ namespace factories {
         return engine;
     }
 
-    std::unique_ptr<Program> make_program( utils::ArgumentParser* arg_parser, GeneralizedPlanningProblem *gpp){
+    std::vector<std::unique_ptr<Program>> make_programs( utils::ArgumentParser* arg_parser, GeneralizedPlanningProblem *gpp){
         auto prog_ins = utils::read_program_instructions(arg_parser->get_program_file_name());
         auto prog_lines = int(prog_ins.size());
         auto prog = std::make_unique<Program>(gpp);
@@ -215,6 +215,9 @@ namespace factories {
         if(arg_parser->is_verbose())
             std::cout << gd->to_string(true) << "\n";
         auto theory = make_theory(arg_parser);
+
+        std::vector<std::unique_ptr<Program>> programs;
+        programs.emplace_back(prog->copy());
         for( int j = 0; j < prog_lines; j++ ){
             if(prog_ins[j] == "empty") continue; // skip empty instructions
             auto ins = gd->get_instruction(prog_ins[j]);
@@ -228,8 +231,9 @@ namespace factories {
                 utils::system_error("In Theory "+theory->get_name()+", "+prog_ins[j]+" is semantically unreachable.",
                                     ERROR_PROGRAM_DOES_NOT_EXIST);
             prog->set_instruction(j, ins);
+            programs.emplace_back(prog->copy());
         }
-        return prog;
+        return programs;
     }
 }
 #endif //__FACTORY_METHODS_H__

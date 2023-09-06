@@ -49,7 +49,7 @@ int main(  int argc, const char* argv[] ){
 
     // Run either the synthesis or the validation, otherwise the mode is wrong
     auto mode = arg_parser->get_mode();
-    if( mode == "synthesis" )
+    if( mode == "synthesis" or mode == "repair")
         runner::synthesis(std::move(arg_parser), std::move(gpp), std::move(stats_info));
     else if( mode == "validation-prog" or mode == "validation-cpp")
         runner::validation(std::move(arg_parser), std::move(gpp), std::move(stats_info));
