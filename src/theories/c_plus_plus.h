@@ -86,7 +86,16 @@ namespace theory{
             /// Issue #8: do not loop over single object pointers (ToDo: no access to pointer domain from the instance)
 
             auto endfor_ins = dynamic_cast<instructions::EndFor*>(new_ins);
-            if(endfor_ins) return false;
+            if(endfor_ins) {
+                auto orig_line = endfor_ins->get_original_line();
+                if(program_line <= orig_line) return false;
+                auto for_ins = dynamic_cast<instructions::For*>(p->get_instruction(orig_line));
+                if(nullptr == for_ins) return false;
+                if(program_line != for_ins->get_destination_line()) return false;
+                if(for_ins->get_pointer() != endfor_ins->get_pointer()) return false;
+                if(for_ins->get_modifier() != endfor_ins->get_modifier()) return false;
+                return true;
+            }
             //if (dynamic_cast<instructions::EndFor*>(new_ins)) return false;  // EndFor only programmed once For is programmed
 
             /// 1. IF syntactic constraints
