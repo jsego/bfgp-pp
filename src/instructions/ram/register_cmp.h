@@ -22,6 +22,10 @@ namespace instructions {
             return true;
         }
 
+        [[nodiscard]] bool is_conditional() const override{
+            return true;
+        }
+
         [[nodiscard]] value_t apply(Instance *ins, ProgramState *ps) override{
             ps->set_line(ps->get_line()+1);
             auto state = ps->get_state();

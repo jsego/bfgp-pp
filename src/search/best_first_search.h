@@ -92,12 +92,13 @@ namespace search {
             /// Returns:
             ///  - true, if one non-empty instruction differs
             ///  - false, otherwise
+            if(nullptr == base_program->get_instruction(pc_max)) return true;
             if(ins->get_id() != base_program->get_instruction(pc_max)->get_id()) return true;
             for(size_t line = 0; line < p->get_num_instructions(); line++){
-                ///
-                auto base_ins_id = base_program->get_instruction(line)->get_id();
-                auto p_ins_id = p->get_instruction(line)->get_id();
-                if((base_ins_id > 0) and (p_ins_id>0) and base_ins_id != p_ins_id) return true;
+                auto base_ins = base_program->get_instruction(line);
+                auto p_ins = p->get_instruction(line);
+                if(nullptr == base_ins or nullptr == p_ins) continue;
+                if(base_ins->get_id() != p_ins->get_id()) return true;
             }
             return false;
         }
@@ -123,6 +124,7 @@ namespace search {
             int maxi = std::max(1, int(_evaluation_functions.size()));
 
             for (const auto &ins: gd->get_instructions()) {
+//std::cout << "[INFO] checking new expansion with instruction:\n" << ins->to_string(true) << "\n";
                 /******
                 //if(_bitvec_theory){  // ToDo: implement after bitvec theory
                 //    auto ins_end = std::dynamic_pointer_cast<instructions::End>(i);
@@ -201,6 +203,7 @@ namespace search {
 
             _evaluated_nodes = 0;
             for(int idx = roots.size()-1; idx >= 0; idx--){
+//std::cout << "[INFO] new root node " << std::endl << roots[idx]->to_string(true) << std::endl;
                 _theory->set_initial_program(_gpp.get(), roots[idx].get());
                 roots[idx]->run(_gpp.get()); /// This must be the first an unique run of each root
                 auto root_node =std::make_shared<Node>(std::move(roots[idx]),
@@ -215,11 +218,12 @@ namespace search {
             while (!is_empty()) {
                 _expanded_nodes++;
                 auto current = select_node();
+//std::cout << "[INFO] Selecting node:\n" << current->to_string() << "\n";
                 // remove current node from open
                 _open.pop();
                 auto current_evaluations = current->f();
                 auto children = expand_node(current.get());
-
+//std::cout << "[INFO] Total new expansions = " << children.size() << "\n";
                 if (current_evaluations < best_evaluations) {
                     best_evaluations = current_evaluations;
                     print_node(current.get());
@@ -228,10 +232,10 @@ namespace search {
                 }
 
                 for (const auto &child: children) {
+//std::cout << "[INFO] New child to evaluate:\n" << child->to_string() << "\n";
                     /// Checked in the expansion
                     //vps = child->get_program()->run( _gpp.get() );
                     //if (vps.empty()) continue;
-
                     /*if( _bitvec_theory ) { // closed list of visited program states
                         std::vector<vec_value_t> vvs;
                         for (const auto &ps: vps) vvs.emplace_back(ps->as_vector());

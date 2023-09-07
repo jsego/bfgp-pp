@@ -18,6 +18,10 @@ namespace instructions {
             return true;
         }
 
+        [[nodiscard]] bool is_conditional() const override{
+            return true;
+        }
+
         value_t apply(Instance* ins, ProgramState *ps ) override{
             // There must be two pointers in the class, and they are not update but just the difference is returned
             ps->set_line(ps->get_line()+1);
