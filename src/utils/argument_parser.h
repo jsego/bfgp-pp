@@ -197,7 +197,7 @@ namespace utils {
             }
 
             // Check if required arguments are filled
-            if (arg_map.find(_program_lines_ntype) == arg_map.end())
+            if ((not is_repair_mode) and arg_map.find(_program_lines_ntype) == arg_map.end())
                 helper("Program lines are required.");
             if (arg_map.find(_problem_folder_ntype) == arg_map.end())
                 helper("Problem folder is required.");
@@ -205,6 +205,8 @@ namespace utils {
                 helper("Program is required.");
 
             // Set default values for the rest if not filled by command line
+            if (is_repair_mode)
+                _program_lines = read_program_instructions(_program_file_name).size();
             if (arg_map.find(_theory_ntype) == arg_map.end())
                 _theory_name = "cpp";
             if (arg_map.find(_eval_func_ntype) == arg_map.end()) {
