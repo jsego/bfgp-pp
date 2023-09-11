@@ -1,0 +1,9 @@
+0. for(ptr_object_0++,7)
+1. unstack(ptr_object_1,ptr_object_2)
+2. put_down(ptr_object_1)
+3. empty
+4. empty
+5. empty
+6. empty
+7. endfor(ptr_object_0++,0)
+8. end
