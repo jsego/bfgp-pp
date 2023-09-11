@@ -261,13 +261,35 @@ namespace theory{
             return true;
         }
 
-        /*[[nodiscard]] bool check_semantic_constraints(
-         * GeneralizedPlanningProblem *gpp,
-         * Program *p,
-         * size_t program_line,
-         * instructions::Instruction *new_ins){
-            /// (ToDo) Issue #9: do not loop over single object pointers
-        }*/
+        [[nodiscard]] bool check_semantic_constraints(
+                GeneralizedPlanningProblem *gpp,
+                Program *p,
+                size_t program_line,
+                instructions::Instruction *new_ins){
+            /// Issue #9: do not modify or loop over single object pointers
+            ObjectType *obj_type = nullptr;
+            auto ins_for = dynamic_cast<instructions::For*>(new_ins);
+            if(ins_for) obj_type = ins_for->get_pointer()->get_type();
+            auto ins_inc = dynamic_cast<instructions::PointerInc*>(new_ins);
+            if(ins_inc) obj_type = ins_inc->get_pointers()[0]->get_type();
+            auto ins_dec = dynamic_cast<instructions::PointerDec*>(new_ins);
+            if(ins_dec) obj_type = ins_dec->get_pointers()[0]->get_type();
+            auto ins_set = dynamic_cast<instructions::PointerSet*>(new_ins);
+            if(ins_set) obj_type = ins_set->get_pointers()[0]->get_type();
+
+            if(obj_type){
+                auto obj_type_name = obj_type->get_name();
+                auto num_instances = gpp->get_num_instances();
+                for(size_t instance_idx = 0; instance_idx < num_instances; ++instance_idx){
+                    auto instance = gpp->get_instance(instance_idx);
+                    if( 1 < instance->get_typed_objects(obj_type_name).size())
+                        return true;
+                }
+                return false;  // return false if no input instance have more than 1 object of this kind
+            }
+
+            return true;
+        }
     };
 }
 
