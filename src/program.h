@@ -95,10 +95,6 @@ public:
         return is_goal; // It is an end instruction and reaches all goal states
     }
 
-    /*[[nodiscard]] static bool is_conditional(const std::string& ins_name) {
-        return (ins_name.substr(0,3) == "cmp" or ins_name.substr(0,4) == "test");
-    }*/
-
     // ToDo: evaluation function dependant - maybe some program specialization would work
     /*bool check_deadend(ProgramState *ps,
                        landmarks::LandmarkGraph *lm,
