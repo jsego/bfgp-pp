@@ -1,3 +1,0 @@
-(put-in o0 l2)
-(move l2 l0)
-; cost = 2 (unit cost)

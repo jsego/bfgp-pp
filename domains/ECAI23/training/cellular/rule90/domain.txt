@@ -1,5 +1,0 @@
-[DOMAIN]: CELLULAR
-[TYPES]:
-[FUNCTIONS]:
-cell(?c:object)
-[ACTIONS]:

@@ -1,8 +1,0 @@
-(up f0 f1)
-(stop f1)
-(up f1 f2)
-(up f2 f3)
-(stop f3)
-(down f3 f2)
-(stop f2)
-; cost = 7 (unit cost)
