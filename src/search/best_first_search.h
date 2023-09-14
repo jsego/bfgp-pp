@@ -269,6 +269,8 @@ namespace search {
                             // reevaluate queue
                             std::priority_queue<std::shared_ptr<Node>, std::vector<std::shared_ptr<Node> >, NodeComparator> old_open;
                             std::swap(old_open, _open);
+                            // Also add the current child, just in case is a correct partial solution
+                            old_open.push(child);
                             while(not old_open.empty()){
                                 auto node = old_open.top();
                                 node->get_program()->run(_gpp.get()); // run again the program
@@ -280,9 +282,8 @@ namespace search {
                             std::cout << " done!\n";
                         }
                     }
-                    else { // FIXME: only add the child if it was not a tentative goal
-                        // Standard A* but no chance to repeat programs
-                        // so nodes are always pushed into priority queue
+                    else {
+                        // Standard A* but no chance to repeat programs so nodes are always pushed into priority queue
                         add_node(child);
                     }
                 }
