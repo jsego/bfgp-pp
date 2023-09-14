@@ -58,10 +58,32 @@ namespace theory{
             ifs->make_ifs(grounder.get(), gd);
         }
 
+        bool check_endfor_constraints(Program *p, size_t program_line, instructions::Instruction *new_ins){
+            auto endfor_ins = dynamic_cast<instructions::EndFor*>(new_ins);
+            if(endfor_ins) {
+                auto orig_line = endfor_ins->get_original_line();
+                if(program_line <= orig_line) return false;
+                auto for_ins = dynamic_cast<instructions::For*>(p->get_instruction(orig_line));
+                if(nullptr == for_ins) return false;
+                if(program_line != for_ins->get_destination_line()) return false;
+                if(for_ins->get_pointer() != endfor_ins->get_pointer()) return false;
+                if(for_ins->get_modifier() != endfor_ins->get_modifier()) return false;
+                return true;
+            }
+            // Otherwise, only EndFor instructions can be programmed in For destination lines
+            for(size_t prev_line = 0; prev_line < program_line; ++prev_line){
+                auto for_ins = dynamic_cast<instructions::For*>(p->get_instruction(prev_line));
+                if(nullptr == for_ins) continue;
+                if(for_ins->get_destination_line() == program_line) return false;
+            }
+            return true;
+        }
+
         [[nodiscard]] bool check_syntax_constraints(Program *p, size_t program_line, instructions::Instruction *new_ins) override {
             auto endfor_ins = dynamic_cast<instructions::EndFor*>(new_ins);
-            if(endfor_ins) return false;
-            //if (dynamic_cast<instructions::EndFor*>(new_ins)) return false;  // EndFor only programmed once For is programmed
+            bool endfor_constraints = check_endfor_constraints(p, program_line, new_ins);
+            if(endfor_ins) return endfor_constraints;  // If the instruction is an EndFor return its result
+            else if(not endfor_constraints) return false; // Return false if it should be an EndFor, but it is not
 
             /// 1. IF syntactic constraints
             auto ins_if = dynamic_cast<instructions::If*>(new_ins);
