@@ -159,12 +159,8 @@ namespace search {
                     p2->set_instruction(dest_line, endfor_instruction);
                 }
 
-                // Test the run
-                auto vps = p2->run(_gpp.get()); /// This must be the first an unique run of the program
-                if(vps.empty()) continue;
-
                 // Update constraints
-                _theory->update(p2.get(), ins);
+                //_theory->update(p2.get(), ins);
 
                 childs.emplace_back(std::make_shared<Node>(std::move(p2), vec_value_t(maxi, 0)));
             }
@@ -243,7 +239,11 @@ namespace search {
                         _closed_program_states.insert(vvs);
                     }*/
 
-                    // Evaluate the child
+                    // Evaluate the child (this must be the first and unique run of the program)
+                    // Issue #4: keep the program run right before node evaluation, since PGP could change
+                    // the number of active instances, hence yield to an inconsistent evaluation
+                    auto vps = child->get_program()->run(_gpp.get());
+                    if(vps.empty()) continue;
                     child->set_f(f(child.get()));
                     child->set_id(_evaluated_nodes++);
 
@@ -274,6 +274,7 @@ namespace search {
                                 node->get_program()->run(_gpp.get()); // run again the program
                                 old_open.pop();
                                 node->set_f(f(node.get()));
+                                node->set_id(_evaluated_nodes++); // Node reevaluated!
                                 add_node(node);
                             }
                             std::cout << " done!\n";
