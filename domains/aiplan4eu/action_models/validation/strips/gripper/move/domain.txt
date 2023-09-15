@@ -1,0 +1,15 @@
+[DOMAIN]: gripper_strips
+
+[TYPES]:
+
+[FUNCTIONS]:
+room(?x0:object)
+ball(?x1:object)
+gripper(?x2:object)
+at_robby(?x3:object)
+at(?x4:object,?x5:object)
+free(?x6:object)
+carry(?x7:object,?x8:object)
+action_move(?from:object,?to:object)
+action_pick(?obj:object,?room:object,?gripper:object)
+action_drop(?obj:object,?room:object,?gripper:object)

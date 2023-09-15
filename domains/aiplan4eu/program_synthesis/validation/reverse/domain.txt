@@ -1,0 +1,12 @@
+[DOMAIN]: REVERSE
+[TYPES]:
+[FUNCTIONS]:
+vector(?o:object)
+[ACTIONS]:
+
+[ACTION]: swap(?x:object,?y:object)
+[TYPE]: memory
+[PRECONDITIONS]:
+[EFFECTS]:
+(vector(?x)=vector(?y))
+(vector(?y)=vector(?x))

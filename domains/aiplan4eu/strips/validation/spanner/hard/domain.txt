@@ -1,0 +1,48 @@
+[DOMAIN]: spanner
+
+[TYPES]:
+location:object
+locatable:object
+man:locatable
+nut:locatable
+spanner:locatable
+
+[FUNCTIONS]:
+at(?x0:locatable,?x1:location)
+carrying(?x2:man,?x3:spanner)
+usable(?x4:spanner)
+link(?x5:location,?x6:location)
+tightened(?x7:nut)
+loose(?x8:nut)
+
+[ACTIONS]:
+[ACTION]: walk(?start:location,?end:location,?m:man)
+[TYPE]: memory
+[PRECONDITIONS]:
+(at(?m,?start)=1)
+(link(?start,?end)=1)
+[EFFECTS]:
+(at(?m,?start)=0)
+(at(?m,?end)=1)
+
+[ACTION]: pickup_spanner(?l:location,?s:spanner,?m:man)
+[TYPE]: memory
+[PRECONDITIONS]:
+(at(?m,?l)=1)
+(at(?s,?l)=1)
+[EFFECTS]:
+(at(?s,?l)=0)
+(carrying(?m,?s)=1)
+
+[ACTION]: tighten_nut(?l:location,?s:spanner,?m:man,?n:nut)
+[TYPE]: memory
+[PRECONDITIONS]:
+(at(?m,?l)=1)
+(at(?n,?l)=1)
+(carrying(?m,?s)=1)
+(usable(?s)=1)
+(loose(?n)=1)
+[EFFECTS]:
+(loose(?n)=0)
+(usable(?s)=0)
+(tightened(?n)=1)

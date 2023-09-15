@@ -1,0 +1,15 @@
+[DOMAIN]: ferry
+
+[TYPES]:
+
+[FUNCTIONS]:
+not_eq(?x0:object,?x1:object)
+car(?x2:object)
+location(?x3:object)
+at_ferry(?x4:object)
+at(?x5:object,?x6:object)
+empty_ferry()
+on(?x7:object)
+action_sail(?from:object,?to:object)
+action_board(?car:object,?loc:object)
+action_debark(?car:object,?loc:object)

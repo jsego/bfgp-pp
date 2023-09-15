@@ -1,0 +1,13 @@
+[DOMAIN]: maintenance_scheduling_domain
+
+[TYPES]:
+plane:object
+day:object
+airport:object
+
+[FUNCTIONS]:
+done(?x0:plane)
+today(?x1:day)
+at(?x2:plane,?x3:day,?x4:airport)
+next(?x5:day,?x6:day)
+action_workat(?day:day,?airport:airport)

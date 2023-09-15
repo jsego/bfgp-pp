@@ -1,0 +1,9 @@
+0. for(ptr_object_0++,6)
+1. for(ptr_object_1++,5)
+2. cmp(vector(ptr_object_0),vector(ptr_object_1))
+3. if((zf=0)(cf=0),5)
+4. swap(ptr_object_0,ptr_object_1)
+5. endfor(ptr_object_1++,1)
+6. endfor(ptr_object_0++,0)
+7. end
+

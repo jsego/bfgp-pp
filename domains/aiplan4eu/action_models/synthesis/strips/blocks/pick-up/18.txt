@@ -1,0 +1,25 @@
+[INSTANCE]: BLOCKS_4_0
+[DOMAIN]: BLOCKS
+
+[OBJECTS]:
+a:object
+b:object
+c:object
+d:object
+
+[INIT]:
+(action_pick_up(d)=1)
+(clear(d)=1)
+(clear(c)=1)
+(ontable(d)=1)
+(ontable(a)=1)
+(handempty()=1)
+(on(b,a)=1)
+(on(c,b)=1)
+
+[GOAL]:
+(clear(c)=1)
+(ontable(a)=1)
+(holding(d)=1)
+(on(b,a)=1)
+(on(c,b)=1)

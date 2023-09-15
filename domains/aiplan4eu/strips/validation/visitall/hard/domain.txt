@@ -1,0 +1,61 @@
+[DOMAIN]: visitall
+
+[TYPES]:
+row:object
+column:object
+
+[FUNCTIONS]:
+visited(?x0:row,?x1:column)
+at_row(?x2:row)
+at_column(?x3:column)
+adjacent_rows(?x4:row,?x5:row)
+adjacent_columns(?x6:column,?x7:column)
+
+[ACTIONS]:
+[ACTION]: move_up(?from:row,?to:row,?c:column)
+[TYPE]: memory
+[PRECONDITIONS]:
+(adjacent_rows(?from,?to)=1)
+(at_row(?from)=1)
+(at_row(?to)=0)
+(at_column(?c)=1)
+[EFFECTS]:
+(at_row(?from)=0)
+(at_row(?to)=1)
+(visited(?to,?c)=1)
+
+[ACTION]: move_down(?from:row,?to:row,?c:column)
+[TYPE]: memory
+[PRECONDITIONS]:
+(adjacent_rows(?to,?from)=1)
+(at_row(?from)=1)
+(at_row(?to)=0)
+(at_column(?c)=1)
+[EFFECTS]:
+(at_row(?from)=0)
+(at_row(?to)=1)
+(visited(?to,?c)=1)
+
+[ACTION]: move_right(?from:column,?to:column,?r:row)
+[TYPE]: memory
+[PRECONDITIONS]:
+(adjacent_columns(?from,?to)=1)
+(at_column(?from)=1)
+(at_column(?to)=0)
+(at_row(?r)=1)
+[EFFECTS]:
+(at_column(?from)=0)
+(at_column(?to)=1)
+(visited(?r,?to)=1)
+
+[ACTION]: move_left(?from:column,?to:column,?r:row)
+[TYPE]: memory
+[PRECONDITIONS]:
+(adjacent_columns(?to,?from)=1)
+(at_column(?from)=1)
+(at_column(?to)=0)
+(at_row(?r)=1)
+[EFFECTS]:
+(at_column(?from)=0)
+(at_column(?to)=1)
+(visited(?r,?to)=1)
