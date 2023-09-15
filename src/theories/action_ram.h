@@ -58,7 +58,7 @@ namespace theory{
             ifs->make_ifs(grounder.get(), gd);
         }
 
-        bool check_endfor_constraints(Program *p, size_t program_line, instructions::Instruction *new_ins){
+        static bool check_endfor_constraints(Program *p, size_t program_line, instructions::Instruction *new_ins){
             auto endfor_ins = dynamic_cast<instructions::EndFor*>(new_ins);
             if(endfor_ins) {
                 auto orig_line = endfor_ins->get_original_line();
