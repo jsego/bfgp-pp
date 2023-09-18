@@ -217,6 +217,81 @@ def experiment_synthesis():
 
     parallel_execution(tasks=tasks)
 
+def experiments_synthesis_2(json_file: str):
+    with open(json_file) as json_data:
+        data = json.load(json_data)
+
+    tasks = []
+    
+    # STRIPS experiments
+    strips_folder = data['strips_folder']
+    assembler_eval_funcs = data['assembler_eval_funcs']
+    cpp_eval_funcs = data['cpp_eval_funcs']
+    """
+    for domain in data['strips_domains']:
+        domain_name = domain['name']
+
+        # STRIPS - assembler
+        synthesis_assembler_args = domain['synthesis_args']['assembler']
+        tasks.extend([SynthesisTask(synthesis_assembler_args['lines'], "assembler",
+                                    f"{strips_folder}/synthesis/{domain_name}/", assembler_eval_funcs,
+                                    synthesis_assembler_args['extra_pointers'])])
+
+        # STRIPS - cpp
+        synthesis_cpp_args = domain['synthesis_args']['cpp']
+        tasks.extend([SynthesisTask(synthesis_cpp_args['lines'], "cpp", f"{strips_folder}/synthesis/{domain_name}/",
+                                    cpp_eval_funcs, synthesis_cpp_args['extra_pointers'])])
+    """
+    # Program Synthesis experiments
+    ps_folder = data['program_synthesis_folder']
+    for domain in data['program_synthesis_domains']:
+        domain_name = domain['name']
+
+        # PS - assembler
+        synthesis_assembler_args = domain['synthesis_args']['assembler']
+        tasks.extend([SynthesisTask(synthesis_assembler_args['lines'], "assembler",
+                                    f"{ps_folder}/synthesis/{domain_name}/", assembler_eval_funcs,
+                                    synthesis_assembler_args['extra_pointers'])])
+
+        # PS - cpp
+        synthesis_cpp_args = domain['synthesis_args']['cpp']
+        tasks.extend([SynthesisTask(synthesis_cpp_args['lines'], "cpp", f"{ps_folder}/synthesis/{domain_name}/",
+                                    cpp_eval_funcs, synthesis_cpp_args['extra_pointers'])])
+
+    # Learning Action Models experiments
+    lam_folder = data['action_models_folder']
+    lam_domains = data['action_models_domains']
+    lam_eval_funcs = data['lam_eval_funcs']
+
+    # LAM - STRIPS
+    for domain in lam_domains['strips']:
+        domain_name = domain['name']
+        for act_name in domain['actions']:
+            tasks.extend([SynthesisTask(1, 'actions_strips', f"{lam_folder}/synthesis/strips/{domain_name}/{act_name}/",
+                                        lam_eval_funcs, 0)])
+
+    # LAM - CELLULAR
+    for domain in lam_domains['cellular']:
+        tasks.extend([SynthesisTask(95, 'actions_cell', f"{lam_folder}/synthesis/cellular/{domain}/",
+                                    lam_eval_funcs, 2)])
+
+    # LAM - ADL
+    for domain in lam_domains['adl']:
+        domain_name = domain['name']
+        for action in domain['actions']:
+            act_name = action['name']
+            act_lines = action['lines']
+            tasks.extend([SynthesisTask(act_lines, 'actions_adl',
+                                        f"{lam_folder}/synthesis/adl/{domain_name}/{act_name}/", lam_eval_funcs, 0)])
+
+
+    # LAM - RAM
+    for domain in lam_domains['ram']:
+        tasks.extend([SynthesisTask(domain['lines'], 'actions_ram', f"{lam_folder}/synthesis/ram/{domain['name']}/",
+                                    lam_eval_funcs, domain['extra_pointers'])])
+
+    parallel_execution(tasks=tasks)
+
 
 def experiment_validation():
     # ToDo: make a JSON file with the data from Synthesis, and reuse the info for validation and repair experiments!
@@ -236,8 +311,9 @@ def experiment_repair():
 
 def main():
     """Assumes all data has been generated"""
-    translate_strips()
-    experiment_synthesis()
+    #translate_strips()
+    #experiment_synthesis()
+    experiments_synthesis_2('scripts/synthesis_aiplan4eu.json')
     #experiment_validation()
     #experiment_repair()
     
