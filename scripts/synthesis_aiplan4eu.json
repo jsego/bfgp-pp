@@ -1,0 +1,278 @@
+{
+"strips_folder": "domains/aiplan4eu/strips/",
+"program_synthesis_folder": "domains/aiplan4eu/program_synthesis/",
+"action_models_folder": "domains/aiplan4eu/action_models/",
+"assembler_eval_funcs": ["ed", "mri"],
+"cpp_eval_funcs": ["ed","ilc"],
+"lam_eval_funcs": ["ilc", "mi", "cwed"],
+"strips_domains":[
+	{
+	"name": "gripper",
+	"synthesis_args":{
+		"assembler": {
+			"lines": 8,
+			"extra_pointers": 0
+		},
+		"cpp": {
+			"lines": 8,
+			"extra_pointers": 0
+		}
+	}
+	},{
+	"name": "spanner",
+	"synthesis_args":{
+		"assembler": {
+			"lines": 14,
+			"extra_pointers": 0
+		},
+		"cpp": {
+			"lines": 12,
+			"extra_pointers": 0
+		}
+	}
+	},{
+	"name": "visitall",
+	"synthesis_args":{
+		"assembler": {
+			"lines": 13,
+			"extra_pointers": 0
+		},
+		"cpp": {
+			"lines": 13,
+			"extra_pointers": 0
+		}
+	}
+	}
+],
+"program_synthesis_domains": [
+	{
+	"name": "find",
+	"synthesis_args":{
+		"assembler": {
+			"lines": 4,
+			"extra_pointers": 0
+		},
+		"cpp": {
+			"lines": 4,
+			"extra_pointers": 0
+		}
+	}
+	},{
+	"name": "triangular_sum",
+	"synthesis_args":{
+		"assembler": {
+			"lines": 5,
+			"extra_pointers": 0
+		},
+		"cpp": {
+			"lines": 5,
+			"extra_pointers": 0
+		}
+	}
+	},{
+	"name": "reverse",
+	"synthesis_args":{
+		"assembler": {
+			"lines": 7,
+			"extra_pointers": 0
+		},
+		"cpp": {
+			"lines": 7,
+			"extra_pointers": 0
+		}
+	}
+	},{
+	"name": "select",
+	"synthesis_args":{
+		"assembler": {
+			"lines": 7,
+			"extra_pointers": 1
+		},
+		"cpp": {
+			"lines": 7,
+			"extra_pointers": 1
+		}
+	}
+	},{
+	"name": "fibonacci",
+	"synthesis_args":{
+		"assembler": {
+			"lines": 7,
+			"extra_pointers": 0
+		},
+		"cpp": {
+			"lines": 7,
+			"extra_pointers": 0
+		}
+	}
+	},{
+	"name": "sorting",
+	"synthesis_args":{
+		"assembler": {
+			"lines": 9,
+			"extra_pointers": 0
+		},
+		"cpp": {
+			"lines": 8,
+			"extra_pointers": 0
+		}
+	}
+	}
+],
+"action_models_domains":{
+	"strips":[
+		{
+		"name": "blocks",
+		"actions":[
+			"pick-up",
+			"put-down",
+			"stack",
+			"unstack"
+		]
+		},
+		{
+		"name": "driverlog",
+		"actions":[
+			"board-truck",
+			"disembark-truck",
+			"drive-truck",
+			"load-truck",
+			"unload-truck",
+			"walk"
+		]
+		},
+		{
+		"name": "ferry",
+		"actions":[
+			"board",
+			"debark",
+			"sail"
+		]
+		},
+		{
+		"name": "grid",
+		"actions":[
+			"move",
+			"pickup",
+			"pickup-and-loose",
+			"putdown",
+			"unlock"
+		]
+		},
+		{
+		"name": "gripper",
+		"actions":[
+			"pick",
+			"drop",
+			"move"
+		]
+		},
+		{
+		"name": "hanoi",
+		"actions":[
+			"move"
+		]
+		},
+		{
+		"name": "miconic",
+		"actions":[
+			"board",
+			"depart",
+			"down",
+			"up"
+		]
+		},
+		{
+		"name": "npuzzle",
+		"actions":[
+			"move"
+		]
+		},
+		{
+		"name": "parking",
+		"actions":[
+			"move-car-to-car",
+			"move-car-to-curb",
+			"move-curb-to-car",
+			"move-curb-to-curb"
+		]
+		},
+		{
+		"name": "rovers",
+		"actions":[
+			"calibrate",
+			"communicate_image_data",
+			"communicate_rock_data",
+			"communicate_soil_data",
+			"drop",
+			"navigate",
+			"sample_rock",
+			"sample_soil",
+			"take_image"
+		]
+		},
+		{
+		"name": "satellite",
+		"actions":[
+			"calibrate",
+			"switch_off",
+			"switch_on",
+			"take_image",
+			"turn_to"
+		]
+		},
+		{
+		"name": "transport",
+		"actions":[
+			"drive",
+			"drop",
+			"pick-up"
+		]
+		},
+		{
+		"name": "visitall",
+		"actions":[
+			"move"
+		]
+		}
+	],
+	"cellular":[
+		"rule30",
+		"rule90",
+		"rule110",
+		"rule184"
+	],
+	"adl":[
+		{
+		"name": "briefcase",
+		"actions":[
+			{"name": "move", "lines": 15},
+			{"name": "put-in", "lines": 8},
+			{"name": "take-out", "lines": 4}
+		]
+		},
+		{
+		"name": "elevators",
+		"actions":[
+			{"name": "down", "lines": 7},
+			{"name": "stop", "lines": 18},
+			{"name": "up", "lines": 7}
+		]
+		},
+		{
+		"name": "maintenance",
+		"actions":[
+			{"name": "workat", "lines": 9}
+		]
+		}
+	],
+	"ram":[
+		{
+			"name": "pancakes",
+			"lines": 8,
+			"extra_pointers": 1
+		}
+	]
+}
+}
+
