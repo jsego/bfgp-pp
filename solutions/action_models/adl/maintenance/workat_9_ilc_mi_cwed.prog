@@ -1,0 +1,10 @@
+0. test(today(ptr_day_0))
+1. if((zf=0),8)
+2. set(today(ptr_day_0),0)
+3. for(ptr_plane_0++,7)
+4. test(at(ptr_plane_0,ptr_day_0,ptr_airport_0))
+5. if((zf=0),7)
+6. set(done(ptr_plane_0),1)
+7. endfor(ptr_plane_0++,3)
+8. end
+

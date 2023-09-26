@@ -1,0 +1,8 @@
+0. for(ptr_object_0++,5)
+1. vector_add(ptr_object_0,ptr_object_1)
+2. dec(ptr_object_1)
+3. vector_add(ptr_object_0,ptr_object_1)
+4. set(ptr_object_1,ptr_object_0)
+5. endfor(ptr_object_0++,0)
+6. end
+

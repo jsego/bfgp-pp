@@ -1,0 +1,8 @@
+0. test(above(ptr_floor_0,ptr_floor_1))
+1. if((zf=0),6)
+2. test(lift_at(ptr_floor_0))
+3. if((zf=0),6)
+4. set(lift_at(ptr_floor_0),0)
+5. set(lift_at(ptr_floor_1),1)
+6. end
+

@@ -1,0 +1,9 @@
+0. for(ptr_ball_0++,6)
+1. pick(ptr_ball_0,ptr_room_0,ptr_gripper_0)
+2. inc(ptr_room_1)
+3. move(ptr_room_0,ptr_room_1)
+4. drop(ptr_ball_0,ptr_room_1,ptr_gripper_0)
+5. move(ptr_room_1,ptr_room_0)
+6. endfor(ptr_ball_0++,0)
+7. end
+

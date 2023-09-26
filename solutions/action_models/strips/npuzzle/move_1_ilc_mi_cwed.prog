@@ -1,0 +1,20 @@
+0. test(at(ptr_tile_0,ptr_position_0))
+1. if((zf=0),18)
+2. test(at(ptr_tile_0,ptr_position_1))
+3. if((zf=1),18)
+4. test(neighbor(ptr_position_0,ptr_position_1))
+5. if((zf=0),18)
+6. test(neighbor(ptr_position_1,ptr_position_0))
+7. if((zf=0),18)
+8. test(empty(ptr_position_0))
+9. if((zf=1),18)
+10. test(empty(ptr_position_1))
+11. if((zf=0),18)
+12. set(at(ptr_tile_0,ptr_position_0),0)
+13. set(at(ptr_tile_0,ptr_position_1),1)
+14. set(empty(ptr_position_0),1)
+15. set(empty(ptr_position_1),0)
+16. end
+17. empty
+18. end
+
