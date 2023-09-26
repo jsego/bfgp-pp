@@ -5,6 +5,8 @@
 "assembler_eval_funcs": ["ed", "mri"],
 "cpp_eval_funcs": ["ed","ilc"],
 "lam_eval_funcs": ["ilc", "mi", "cwed"],
+"solutions_folder": "solutions/",
+"repair_folder": "program_repair/",
 "strips_domains":[
 	{
 	"name": "gripper",
