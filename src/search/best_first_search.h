@@ -41,6 +41,7 @@ namespace search {
 
             // FIXME: if this happens, then progressive mode fails
             if (vps.empty()) {
+                //std::cout <<run_program << "\n"<< p->to_string(false) << std::endl;
                 _last_failed_instance_idx = p->get_failed_instance_idx();
                 return false; // Check whether some error occurred during execution
             }
@@ -195,6 +196,22 @@ namespace search {
             else{
                 /// Otherwise, constraints are added from the input program (last in roots) to avoid search duplicates
                 this->base_program = roots[roots.size()-1]->copy();
+                /// Also check whether the base program is a goal
+                _evaluated_nodes = 0;
+                _theory->set_initial_program(_gpp.get(), this->base_program.get());
+                auto base_node = std::make_shared<Node>(this->base_program->copy(),
+                                                        vec_value_t(_evaluation_functions.size(), INF),
+                                                        _evaluated_nodes++);
+                // if the program solves all instances finish
+                bool is_progressive = _gpp->is_progressive();
+                _gpp->set_progressive(false);
+                bool all_goal = is_goal(base_node.get(), true);
+                _gpp->set_progressive(is_progressive);
+                if (all_goal) {
+                    base_node->set_f(f(base_node.get()));
+                    add_node(base_node);
+                    return base_node;
+                }
             }
 
             _evaluated_nodes = 0;

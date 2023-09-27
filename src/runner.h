@@ -50,14 +50,16 @@ namespace runner{
                         arg_parser->get_problem_folder(),
                         arg_parser->get_program_lines(),
                         arg_parser->get_evaluation_function_names());
-        auto dest_file_name = utils::join(dest_folder_file);
+        auto dest_file_name = (arg_parser->get_output_file().empty()?
+                utils::join(dest_folder_file):
+                dest_folder_file.first+arg_parser->get_output_file());
 
         if(resulting_node != nullptr ){
             auto resulting_program = resulting_node->get_program();
             utils::print_to_file(dest_file_name+".prog", resulting_program->to_string(false));
-            auto output_file = arg_parser->get_output_file();
+            /*auto output_file = arg_parser->get_output_file();
             if(not output_file.empty())
-                utils::print_to_file(output_file, resulting_program->to_string(false));
+                utils::print_to_file(output_file, resulting_program->to_string(false));*/
             stats_info->add_info_msg("SOLUTION FOUND!!!\n" + resulting_program->to_string(false));
         }
         else{
@@ -99,7 +101,16 @@ namespace runner{
             }
         }
         stats_info->add_info_msg("Number of instances: " + std::to_string(gpp->get_num_instances()));
-        if( !vps.empty() ) stats_info->add_info_msg("GOAL ACHIEVED!");
+        bool all_goals = false;
+        if(!vps.empty()) {
+            assert(vps.size() == gpp->get_num_instances());
+            all_goals = true;
+            int error = 0;
+            for (size_t idx = 0; idx < gpp->get_num_instances(); ++idx) {
+                all_goals &= prog->is_goal(vps[idx], gpp->get_instance(idx), error);
+            }
+        }
+        if(all_goals) stats_info->add_info_msg("GOAL ACHIEVED!");
         else stats_info->add_info_msg("INVALID GENERAL PLAN :(");
     }
 

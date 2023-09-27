@@ -205,8 +205,12 @@ namespace utils {
                 helper("Program is required.");
 
             // Set default values for the rest if not filled by command line
-            if (is_repair_mode)
+            if (is_repair_mode) {
                 _program_lines = read_program_instructions(_program_file_name).size();
+                auto folder_files = utils::split(_program_file_name,"/");
+                // Get the file name of the input program
+                _output_file = utils::split(folder_files[folder_files.size()-1],".")[0];
+            }
             if (arg_map.find(_theory_ntype) == arg_map.end())
                 _theory_name = "cpp";
             if (arg_map.find(_eval_func_ntype) == arg_map.end()) {

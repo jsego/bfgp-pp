@@ -86,7 +86,7 @@ public:
     }
 	
 	bool is_goal(ProgramState* ps, Instance* ins, int &error ) const{
-        // std::cout << "Instance#" << ins->get_instance_id() << ":\n" << ps->to_string() << "\n";
+        //std::cout << "Instance#" << ins->get_instance_id() << ":\n" << ps->to_string() << "\n";
 		auto line = ps->get_line();
         auto end = dynamic_cast<instructions::End*>( _instructions[line] );
         if( end == nullptr ) return false;

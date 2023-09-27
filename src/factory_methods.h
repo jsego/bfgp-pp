@@ -235,8 +235,8 @@ namespace factories {
         if(arg_parser->is_verbose())
             std::cout << gd->to_string(true) << "\n";
         auto theory = make_theory(arg_parser);
-        if(theory->is_action_theory())
-            theory->set_initial_program(gpp, prog.get());
+        //if(theory->is_action_theory())
+        theory->set_initial_program(gpp, prog.get());
 
         std::vector<std::unique_ptr<Program>> programs;
         programs.emplace_back(prog->copy());
