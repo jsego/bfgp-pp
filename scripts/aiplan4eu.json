@@ -11,26 +11,35 @@
 	{
 	"name": "gripper",
 	"synthesis_args":{
-		"assembler": {
-			"lines": 8,
-			"extra_pointers": 0
-		},
-		"cpp": {
-			"lines": 8,
-			"extra_pointers": 0
-		}
+		"assembler": {"lines": 8, "extra_pointers": 0},
+		"cpp": {"lines": 8, "extra_pointers": 0}
+	},
+	"repair_args": {
+		"assembler": [
+			"gripper_assembler_missing_loops.prog",
+			"gripper_assembler_missing_planning_actions.prog",
+			"gripper_assembler_ok.prog"],
+		"cpp":[
+			"gripper_cpp_missing_loops.prog",
+			"gripper_cpp_missing_planning_actions.prog",
+			"gripper_cpp_ok.prog"]
 	}
 	},{
 	"name": "spanner",
 	"synthesis_args":{
-		"assembler": {
-			"lines": 14,
-			"extra_pointers": 0
-		},
-		"cpp": {
-			"lines": 12,
-			"extra_pointers": 0
-		}
+		"assembler": {"lines": 14, "extra_pointers": 0},
+		"cpp": {"lines": 12, "extra_pointers": 0}
+	},
+	"repair_args": {
+		"assembler": [
+			"spanner_assembler_missing_loops.prog",
+			"spanner_assembler_missing_planning_actions.prog",
+			"spanner_assembler_ok.prog"],
+		"cpp":[
+			"spanner_cpp_missing_loops.prog",
+			"spanner_cpp_wrong_loop.prog",
+			"spanner_cpp_missing_planning_actions.prog",
+			"spanner_cpp_ok.prog"]
 	}
 	},{
 	"name": "visitall",
@@ -43,6 +52,13 @@
 			"lines": 13,
 			"extra_pointers": 0
 		}
+	},
+	"repair_args": {
+		"assembler": [
+			"visitall_assembler_ok.prog"],
+		"cpp":[
+			"visitall_cpp_missing_instructions.prog",
+			"visitall_cpp_ok.prog"]
 	}
 	}
 ],

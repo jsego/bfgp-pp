@@ -79,6 +79,18 @@ class ValidationTask(Task):
                f"-f {self.folder} -s {self.extra_pointers} -inf {self.infinite_detection}"
 
 @dataclass(frozen=True)
+class RepairTask(Task):
+    theory: str
+    folder: str
+    program: str
+    eval_funcs: List
+    extra_pointers: int = 0
+
+    def get_command(self) -> str:
+        return f"/bin/bash scripts/time_memory.sh ./main.bin -m repair -t {self.theory} -p {self.program} " \
+               f"-f {self.folder} -e {' '.join(self.eval_funcs)} -s {self.extra_pointers} -pgp True"
+
+@dataclass(frozen=True)
 class TranslateTask(Task):
     domain_file: str
     instance_file: str
@@ -320,15 +332,56 @@ def experiment_validation(json_file: str):
     parallel_execution(tasks=tasks)
 
 
-def experiment_repair():
-    pass
+def experiment_repair(json_file: str):
+    with open(json_file) as json_data:
+        data = json.load(json_data)
+
+    tasks = []
+
+    repair_folder = data['repair_folder']
+    assembler_eval_funcs = data['assembler_eval_funcs']
+    cpp_eval_funcs = data['cpp_eval_funcs']
+
+    # STRIPS experiments
+    difficulty_folders = ["easy", "medium", "hard"]
+    strips_folder = data['strips_folder']
+
+    for domain in data['strips_domains']:
+        domain_name = domain['name']
+        synthesis_folder = f"{strips_folder}/synthesis/{domain_name}/"
+
+        # STRIPS - assembler
+        extra_pointers = domain['synthesis_args']['assembler']['extra_pointers']
+        programs = domain['repair_args']['assembler']
+        for program in programs:
+            program_file = f"{repair_folder}/strips/{domain_name}/{program}"
+            tasks.extend([RepairTask("assembler",
+                                     f"{strips_folder}/synthesis/{domain_name}/",
+                                     f"{program_file}",
+                                     assembler_eval_funcs,
+                                     extra_pointers)])
+
+        # STRIPS - cpp
+        extra_pointers = domain['synthesis_args']['cpp']['extra_pointers']
+        programs = domain['repair_args']['cpp']
+        for program in programs:
+            program_file = f"{repair_folder}/strips/{domain_name}/{program}"
+            tasks.extend([RepairTask("cpp",
+                                     f"{strips_folder}/synthesis/{domain_name}/",
+                                     f"{program_file}",
+                                     cpp_eval_funcs,
+                                     extra_pointers)])
+
+    # ToDo: PS repairs
+
+    parallel_execution(tasks=tasks)
 
 def main():
     """Assumes all data has been generated"""
     #translate_strips()
     #experiments_synthesis('scripts/aiplan4eu.json')
-    experiment_validation('scripts/aiplan4eu.json')
-    #experiment_repair()
+    #experiment_validation('scripts/aiplan4eu.json')
+    experiment_repair('scripts/aiplan4eu.json')
     
 
 if __name__ == "__main__":

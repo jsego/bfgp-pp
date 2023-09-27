@@ -1,0 +1,13 @@
+0. for(ptr_locatable_0++,10)
+1. for(ptr_location_0++,8)
+2. for(ptr_spanner_0++,7)
+3. empty
+4. empty
+5. empty
+6. empty
+7. endfor(ptr_spanner_0++,2)
+8. endfor(ptr_location_0++,1)
+9. empty
+10. endfor(ptr_locatable_0++,0)
+11. end
+
