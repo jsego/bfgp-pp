@@ -1,0 +1,8 @@
+0. cmp(vector(ptr_object_0),vector(ptr_object_1))
+1. empty
+2. set(ptr_object_1,ptr_object_0)
+3. inc(ptr_object_0)
+4. empty
+5. select(ptr_object_1)
+6. end
+

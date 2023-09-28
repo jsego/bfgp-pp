@@ -1,296 +1,316 @@
 {
-"strips_folder": "domains/aiplan4eu/strips/",
-"program_synthesis_folder": "domains/aiplan4eu/program_synthesis/",
-"action_models_folder": "domains/aiplan4eu/action_models/",
-"assembler_eval_funcs": ["ed", "mri"],
-"cpp_eval_funcs": ["ed","ilc"],
-"lam_eval_funcs": ["ilc", "mi", "cwed"],
-"solutions_folder": "solutions/",
-"repair_folder": "program_repair/",
-"strips_domains":[
-	{
-	"name": "gripper",
-	"synthesis_args":{
-		"assembler": {"lines": 8, "extra_pointers": 0},
-		"cpp": {"lines": 8, "extra_pointers": 0}
-	},
-	"repair_args": {
-		"assembler": [
-			"gripper_assembler_missing_loops.prog",
-			"gripper_assembler_missing_planning_actions.prog",
-			"gripper_assembler_ok.prog"],
-		"cpp":[
-			"gripper_cpp_missing_loops.prog",
-			"gripper_cpp_missing_planning_actions.prog",
-			"gripper_cpp_ok.prog"]
-	}
-	},{
-	"name": "spanner",
-	"synthesis_args":{
-		"assembler": {"lines": 14, "extra_pointers": 0},
-		"cpp": {"lines": 12, "extra_pointers": 0}
-	},
-	"repair_args": {
-		"assembler": [
-			"spanner_assembler_missing_loops.prog",
-			"spanner_assembler_missing_planning_actions.prog",
-			"spanner_assembler_ok.prog"],
-		"cpp":[
-			"spanner_cpp_missing_loops.prog",
-			"spanner_cpp_wrong_loop.prog",
-			"spanner_cpp_missing_planning_actions.prog",
-			"spanner_cpp_ok.prog"]
-	}
-	},{
-	"name": "visitall",
-	"synthesis_args":{
-		"assembler": {
-			"lines": 13,
-			"extra_pointers": 0
-		},
-		"cpp": {
-			"lines": 13,
-			"extra_pointers": 0
-		}
-	},
-	"repair_args": {
-		"assembler": [
-			"visitall_assembler_ok.prog"],
-		"cpp":[
-			"visitall_cpp_missing_instructions.prog",
-			"visitall_cpp_ok.prog"]
-	}
-	}
-],
-"program_synthesis_domains": [
-	{
-	"name": "find",
-	"synthesis_args":{
-		"assembler": {
-			"lines": 4,
-			"extra_pointers": 0
-		},
-		"cpp": {
-			"lines": 4,
-			"extra_pointers": 0
-		}
-	}
-	},{
-	"name": "triangular_sum",
-	"synthesis_args":{
-		"assembler": {
-			"lines": 5,
-			"extra_pointers": 0
-		},
-		"cpp": {
-			"lines": 5,
-			"extra_pointers": 0
-		}
-	}
-	},{
-	"name": "reverse",
-	"synthesis_args":{
-		"assembler": {
-			"lines": 7,
-			"extra_pointers": 0
-		},
-		"cpp": {
-			"lines": 7,
-			"extra_pointers": 0
-		}
-	}
-	},{
-	"name": "select",
-	"synthesis_args":{
-		"assembler": {
-			"lines": 7,
-			"extra_pointers": 1
-		},
-		"cpp": {
-			"lines": 7,
-			"extra_pointers": 1
-		}
-	}
-	},{
-	"name": "fibonacci",
-	"synthesis_args":{
-		"assembler": {
-			"lines": 7,
-			"extra_pointers": 0
-		},
-		"cpp": {
-			"lines": 7,
-			"extra_pointers": 0
-		}
-	}
-	},{
-	"name": "sorting",
-	"synthesis_args":{
-		"assembler": {
-			"lines": 9,
-			"extra_pointers": 0
-		},
-		"cpp": {
-			"lines": 8,
-			"extra_pointers": 0
-		}
-	}
-	}
-],
-"action_models_domains":{
-	"strips":[
+	"strips_folder": "domains/aiplan4eu/strips/",
+	"program_synthesis_folder": "domains/aiplan4eu/program_synthesis/",
+	"action_models_folder": "domains/aiplan4eu/action_models/",
+	"assembler_eval_funcs": ["ed", "mri"],
+	"cpp_eval_funcs": ["ed","ilc"],
+	"lam_eval_funcs": ["ilc", "mi", "cwed"],
+	"solutions_folder": "solutions/",
+	"repair_folder": "program_repair/",
+	"strips_domains":[
 		{
-		"name": "blocks",
-		"actions":[
-			"pick-up",
-			"put-down",
-			"stack",
-			"unstack"
-		]
-		},
-		{
-		"name": "driverlog",
-		"actions":[
-			"board-truck",
-			"disembark-truck",
-			"drive-truck",
-			"load-truck",
-			"unload-truck",
-			"walk"
-		]
-		},
-		{
-		"name": "ferry",
-		"actions":[
-			"board",
-			"debark",
-			"sail"
-		]
-		},
-		{
-		"name": "grid",
-		"actions":[
-			"move",
-			"pickup",
-			"pickup-and-loose",
-			"putdown",
-			"unlock"
-		]
-		},
-		{
-		"name": "gripper",
-		"actions":[
-			"pick",
-			"drop",
-			"move"
-		]
-		},
-		{
-		"name": "hanoi",
-		"actions":[
-			"move"
-		]
-		},
-		{
-		"name": "miconic",
-		"actions":[
-			"board",
-			"depart",
-			"down",
-			"up"
-		]
-		},
-		{
-		"name": "npuzzle",
-		"actions":[
-			"move"
-		]
-		},
-		{
-		"name": "parking",
-		"actions":[
-			"move-car-to-car",
-			"move-car-to-curb",
-			"move-curb-to-car",
-			"move-curb-to-curb"
-		]
-		},
-		{
-		"name": "rovers",
-		"actions":[
-			"calibrate",
-			"communicate_image_data",
-			"communicate_rock_data",
-			"communicate_soil_data",
-			"drop",
-			"navigate",
-			"sample_rock",
-			"sample_soil",
-			"take_image"
-		]
-		},
-		{
-		"name": "satellite",
-		"actions":[
-			"calibrate",
-			"switch_off",
-			"switch_on",
-			"take_image",
-			"turn_to"
-		]
-		},
-		{
-		"name": "transport",
-		"actions":[
-			"drive",
-			"drop",
-			"pick-up"
-		]
-		},
-		{
-		"name": "visitall",
-		"actions":[
-			"move"
-		]
+			"name": "gripper",
+			"synthesis_args":{
+				"assembler": {"lines": 8, "extra_pointers": 0},
+				"cpp": {"lines": 8, "extra_pointers": 0}
+			},
+			"repair_args": {
+				"assembler": [
+					"gripper_assembler_missing_loops.prog",
+					"gripper_assembler_missing_planning_actions.prog",
+					"gripper_assembler_ok.prog"],
+				"cpp":[
+					"gripper_cpp_missing_loops.prog",
+					"gripper_cpp_missing_planning_actions.prog",
+					"gripper_cpp_ok.prog"]
+			}
+		},{
+			"name": "spanner",
+			"synthesis_args":{
+				"assembler": {"lines": 14, "extra_pointers": 0},
+				"cpp": {"lines": 12, "extra_pointers": 0}
+			},
+			"repair_args": {
+				"assembler": [
+					"spanner_assembler_missing_loops.prog",
+					"spanner_assembler_missing_planning_actions.prog",
+					"spanner_assembler_ok.prog"],
+				"cpp":[
+					"spanner_cpp_missing_loops.prog",
+					"spanner_cpp_wrong_loop.prog",
+					"spanner_cpp_missing_planning_actions.prog",
+					"spanner_cpp_ok.prog"]
+			}
+		},{
+			"name": "visitall",
+			"synthesis_args":{
+				"assembler": {"lines": 13, "extra_pointers": 0},
+				"cpp": {"lines": 13, "extra_pointers": 0}
+			},
+			"repair_args": {
+				"assembler": [
+					"visitall_assembler_ok.prog"],
+				"cpp":[
+					"visitall_cpp_missing_instructions.prog",
+					"visitall_cpp_ok.prog"]
+			}
 		}
 	],
-	"cellular":[
-		"rule30",
-		"rule90",
-		"rule110",
-		"rule184"
-	],
-	"adl":[
+	"program_synthesis_domains": [
 		{
-		"name": "briefcase",
-		"actions":[
-			{"name": "move", "lines": 15},
-			{"name": "put-in", "lines": 8},
-			{"name": "take-out", "lines": 4}
-		]
-		},
-		{
-		"name": "elevators",
-		"actions":[
-			{"name": "down", "lines": 7},
-			{"name": "stop", "lines": 18},
-			{"name": "up", "lines": 7}
-		]
-		},
-		{
-		"name": "maintenance",
-		"actions":[
-			{"name": "workat", "lines": 9}
-		]
+			"name": "find",
+			"synthesis_args":{
+				"assembler": {"lines": 4, "extra_pointers": 0},
+				"cpp": {"lines": 4, "extra_pointers": 0}
+			},
+			"repair_args": {
+				"assembler": [
+					"find_assembler_missing_loops.prog",
+					"find_assembler_missing_planning_actions.prog",
+					"find_assembler_all_ok.prog"],
+				"cpp":[
+					"find_cpp_missing_loops.prog",
+					"find_cpp_missing_planning_actions.prog",
+					"find_cpp_wrong_instructions.prog",
+					"find_cpp_all_ok.prog"]
+			}
+		},{
+			"name": "triangular_sum",
+			"synthesis_args":{
+				"assembler": {"lines": 5, "extra_pointers": 0},
+				"cpp": {"lines": 5, "extra_pointers": 0}
+			},
+			"repair_args": {
+				"assembler": [
+					"triangular_sum_assembler_missing_loops.prog",
+					"triangular_sum_assembler_missing_planning_actions.prog",
+					"triangular_sum_assembler_all_ok.prog"],
+				"cpp":[
+					"triangular_sum_cpp_missing_loops.prog",
+					"triangular_sum_cpp_missing_planning_actions.prog",
+					"triangular_sum_cpp_wrong_instructions.prog",
+					"triangular_sum_cpp_all_ok.prog"]
+			}
+		},{
+			"name": "reverse",
+			"synthesis_args":{
+				"assembler": {"lines": 7, "extra_pointers": 0},
+				"cpp": {"lines": 7, "extra_pointers": 0}
+			},
+			"repair_args": {
+				"assembler": [
+					"reverse_assembler_missing_loops.prog",
+					"reverse_assembler_missing_planning_actions.prog",
+					"reverse_assembler_all_ok.prog"],
+				"cpp":[
+					"reverse_cpp_missing_loops.prog",
+					"reverse_cpp_missing_planning_actions.prog",
+					"reverse_cpp_all_ok.prog"]
+			}
+		},{
+			"name": "select",
+			"synthesis_args":{
+				"assembler": {"lines": 7, "extra_pointers": 1},
+				"cpp": {"lines": 7, "extra_pointers": 1}
+			},
+			"repair_args": {
+				"assembler": [
+					"select_assembler_missing_loops.prog",
+					"select_assembler_missing_planning_actions.prog",
+					"select_assembler_all_ok.prog"],
+				"cpp":[
+					"select_cpp_missing_loops.prog",
+					"select_cpp_missing_planning_actions.prog",
+					"select_cpp_all_ok.prog"]
+			}
+		},{
+			"name": "fibonacci",
+			"synthesis_args":{
+				"assembler": {"lines": 7, "extra_pointers": 0},
+				"cpp": {"lines": 7, "extra_pointers": 0}
+			},
+			"repair_args": {
+				"assembler": [
+					"fibonacci_assembler_missing_loops.prog",
+					"fibonacci_assembler_missing_planning_actions.prog",
+					"fibonacci_assembler_all_ok.prog"],
+				"cpp":[
+					"fibonacci_cpp_missing_loops.prog",
+					"fibonacci_cpp_missing_planning_actions.prog",
+					"fibonacci_cpp_all_ok.prog"]
+			}
+		},{
+			"name": "sorting",
+			"synthesis_args":{
+				"assembler": {"lines": 9, "extra_pointers": 0},
+				"cpp": {"lines": 8, "extra_pointers": 0}
+			},
+			"repair_args": {
+				"assembler": [
+					"sorting_assembler_missing_loops.prog",
+					"sorting_assembler_missing_planning_actions.prog",
+					"sorting_assembler_all_ok.prog"],
+				"cpp":[
+					"sorting_cpp_missing_loops.prog",
+					"sorting_cpp_missing_planning_actions.prog",
+					"sorting_cpp_all_ok.prog"]
+			}
 		}
 	],
-	"ram":[
-		{
-			"name": "pancakes",
-			"lines": 8,
-			"extra_pointers": 1
-		}
-	]
-}
+	"action_models_domains":{
+		"strips":[
+			{
+				"name": "blocks",
+				"actions":[
+					"pick-up",
+					"put-down",
+					"stack",
+					"unstack"
+				]
+			},
+			{
+				"name": "driverlog",
+				"actions":[
+					"board-truck",
+					"disembark-truck",
+					"drive-truck",
+					"load-truck",
+					"unload-truck",
+					"walk"
+				]
+			},
+			{
+				"name": "ferry",
+				"actions":[
+					"board",
+					"debark",
+					"sail"
+				]
+			},
+			{
+				"name": "grid",
+				"actions":[
+					"move",
+					"pickup",
+					"pickup-and-loose",
+					"putdown",
+					"unlock"
+				]
+			},
+			{
+				"name": "gripper",
+				"actions":[
+					"pick",
+					"drop",
+					"move"
+				]
+			},
+			{
+				"name": "hanoi",
+				"actions":[
+					"move"
+				]
+			},
+			{
+				"name": "miconic",
+				"actions":[
+					"board",
+					"depart",
+					"down",
+					"up"
+				]
+			},
+			{
+				"name": "npuzzle",
+				"actions":[
+					"move"
+				]
+			},
+			{
+				"name": "parking",
+				"actions":[
+					"move-car-to-car",
+					"move-car-to-curb",
+					"move-curb-to-car",
+					"move-curb-to-curb"
+				]
+			},
+			{
+				"name": "rovers",
+				"actions":[
+					"calibrate",
+					"communicate_image_data",
+					"communicate_rock_data",
+					"communicate_soil_data",
+					"drop",
+					"navigate",
+					"sample_rock",
+					"sample_soil",
+					"take_image"
+				]
+			},
+			{
+				"name": "satellite",
+				"actions":[
+					"calibrate",
+					"switch_off",
+					"switch_on",
+					"take_image",
+					"turn_to"
+				]
+			},
+			{
+				"name": "transport",
+				"actions":[
+					"drive",
+					"drop",
+					"pick-up"
+				]
+			},
+			{
+				"name": "visitall",
+				"actions":[
+					"move"
+				]
+			}
+		],
+		"cellular":[
+			"rule30",
+			"rule90",
+			"rule110",
+			"rule184"
+		],
+		"adl":[
+			{
+				"name": "briefcase",
+				"actions":[
+					{"name": "move", "lines": 15},
+					{"name": "put-in", "lines": 8},
+					{"name": "take-out", "lines": 4}
+				]
+			},
+			{
+				"name": "elevators",
+				"actions":[
+					{"name": "down", "lines": 7},
+					{"name": "stop", "lines": 18},
+					{"name": "up", "lines": 7}
+				]
+			},
+			{
+				"name": "maintenance",
+				"actions":[
+					{"name": "workat", "lines": 9}
+				]
+			}
+		],
+		"ram":[
+			{
+				"name": "pancakes",
+				"lines": 8,
+				"extra_pointers": 1
+			}
+		]
+	}
 }
 

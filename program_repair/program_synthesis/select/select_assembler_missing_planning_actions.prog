@@ -1,0 +1,8 @@
+0. empty
+1. goto(3,!((zf=0)(cf=0)))
+2. empty
+3. empty
+4. goto(0,!((zf=1)(cf=0)))
+5. empty
+6. end
+

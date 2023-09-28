@@ -1,0 +1,9 @@
+0. for(ptr_object_0++,6)
+1. for(ptr_object_1++,5)
+2. empty
+3. if((zf=0)(cf=0),5)
+4. empty
+5. endfor(ptr_object_1++,1)
+6. endfor(ptr_object_0++,0)
+7. end
+

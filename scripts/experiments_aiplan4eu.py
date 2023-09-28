@@ -343,7 +343,6 @@ def experiment_repair(json_file: str):
     cpp_eval_funcs = data['cpp_eval_funcs']
 
     # STRIPS experiments
-    difficulty_folders = ["easy", "medium", "hard"]
     strips_folder = data['strips_folder']
 
     for domain in data['strips_domains']:
@@ -356,7 +355,7 @@ def experiment_repair(json_file: str):
         for program in programs:
             program_file = f"{repair_folder}/strips/{domain_name}/{program}"
             tasks.extend([RepairTask("assembler",
-                                     f"{strips_folder}/synthesis/{domain_name}/",
+                                     synthesis_folder,
                                      f"{program_file}",
                                      assembler_eval_funcs,
                                      extra_pointers)])
@@ -372,15 +371,42 @@ def experiment_repair(json_file: str):
                                      cpp_eval_funcs,
                                      extra_pointers)])
 
-    # ToDo: PS repairs
+    # Program Synthesis (PS) experiments
+    ps_folder = data['program_synthesis_folder']
+    for domain in data['program_synthesis_domains']:
+        domain_name = domain['name']
+        synthesis_folder = f"{ps_folder}/synthesis/{domain_name}/"
+
+        # PS - assembler
+        extra_pointers = domain['synthesis_args']['assembler']['extra_pointers']
+        programs = domain['repair_args']['assembler']
+        for program in programs:
+            program_file = f"{repair_folder}/program_synthesis/{domain_name}/{program}"
+            tasks.extend([RepairTask("assembler",
+                                     synthesis_folder,
+                                     program_file,
+                                     assembler_eval_funcs,
+                                     extra_pointers)])
+
+        # PS - cpp
+        extra_pointers = domain['synthesis_args']['cpp']['extra_pointers']
+        programs = domain['repair_args']['cpp']
+        for program in programs:
+            program_file = f"{repair_folder}/program_synthesis/{domain_name}/{program}"
+            tasks.extend([RepairTask("cpp",
+                                     synthesis_folder,
+                                     program_file,
+                                     cpp_eval_funcs,
+                                     extra_pointers)])
+
 
     parallel_execution(tasks=tasks)
 
 def main():
     """Assumes all data has been generated"""
-    #translate_strips()
-    #experiments_synthesis('scripts/aiplan4eu.json')
-    #experiment_validation('scripts/aiplan4eu.json')
+    translate_strips()
+    experiments_synthesis('scripts/aiplan4eu.json')
+    experiment_validation('scripts/aiplan4eu.json')
     experiment_repair('scripts/aiplan4eu.json')
     
 

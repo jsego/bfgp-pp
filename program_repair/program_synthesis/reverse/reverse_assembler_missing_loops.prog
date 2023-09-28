@@ -1,0 +1,8 @@
+0. set(ptr_object_0,ptr_object_1)
+1. swap(ptr_object_0,ptr_object_1)
+2. inc(ptr_object_0)
+3. empty
+4. inc(ptr_object_1)
+5. empty
+6. end
+

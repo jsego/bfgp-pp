@@ -1,0 +1,5 @@
+0. for(ptr_object_0++,2)
+1. empty
+2. endfor(ptr_object_0++,0)
+3. end
+
