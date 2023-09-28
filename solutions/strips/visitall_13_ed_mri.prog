@@ -1,0 +1,13 @@
+0. inc(ptr_column_0)
+1. move_right(ptr_column_1,ptr_column_0,ptr_row_0)
+2. inc(ptr_column_1)
+3. goto(0,!((zf=1)(cf=0)))
+4. inc(ptr_row_0)
+5. move_up(ptr_row_1,ptr_row_0,ptr_column_0)
+6. dec(ptr_column_0)
+7. move_left(ptr_column_1,ptr_column_0,ptr_row_0)
+8. dec(ptr_column_1)
+9. goto(5,!((zf=1)(cf=0)))
+10. inc(ptr_row_1)
+11. goto(0,!((zf=1)(cf=0)))
+12. end

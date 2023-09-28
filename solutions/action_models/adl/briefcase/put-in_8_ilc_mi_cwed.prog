@@ -1,0 +1,9 @@
+0. test(at(ptr_portable_0,ptr_location_0))
+1. if((zf=0),7)
+2. test(in(ptr_portable_0))
+3. if((zf=1),7)
+4. test(is_at(ptr_location_0))
+5. if((zf=0),7)
+6. set(in(ptr_portable_0),1)
+7. end
+

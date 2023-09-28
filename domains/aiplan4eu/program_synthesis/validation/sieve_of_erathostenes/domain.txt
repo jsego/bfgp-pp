@@ -1,0 +1,11 @@
+[DOMAIN]: SIEVE-OF-ERATOSTHENES
+
+[FUNCTIONS]:
+vector(?o:object)
+
+[ACTIONS]:
+[ACTION]: set_no_prime(?x:object)
+[TYPE]: memory
+[PRECONDITIONS]:
+[EFFECTS]:
+(vector(?x)=0)

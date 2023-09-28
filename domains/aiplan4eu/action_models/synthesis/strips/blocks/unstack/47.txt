@@ -1,0 +1,34 @@
+[INSTANCE]: BLOCKS_6_0
+[DOMAIN]: BLOCKS
+
+[OBJECTS]:
+a:object
+b:object
+c:object
+d:object
+e:object
+f:object
+
+[INIT]:
+(action_unstack(e,b)=1)
+(clear(e)=1)
+(clear(f)=1)
+(clear(a)=1)
+(ontable(d)=1)
+(ontable(b)=1)
+(ontable(c)=1)
+(on(a,c)=1)
+(on(f,d)=1)
+(on(e,b)=1)
+(handempty()=1)
+
+[GOAL]:
+(clear(b)=1)
+(clear(f)=1)
+(clear(a)=1)
+(ontable(d)=1)
+(ontable(b)=1)
+(ontable(c)=1)
+(on(a,c)=1)
+(on(f,d)=1)
+(holding(e)=1)

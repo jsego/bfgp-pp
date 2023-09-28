@@ -29,28 +29,16 @@ namespace theory{
             /// 1. Call END constructor
             auto terminal = std::make_unique<core::Terminal>(gd);
 
-            /// 2. Call Fors constructor (in increasing and decreasing order)
-            //auto for_loops = std::make_unique<core::Fors>();
-            //for_loops->make_fors(gd);
-
-            /// 3. Call STRIPS constructor
-            //auto strips = std::make_unique<core::STRIPS>(grounder.get(), gd);
-
-            /// 4. Call RAM constructor
+            /// 2. Call RAM constructor
             auto ram = std::make_unique<core::RAM>();
-            /// 4.a Pointer modifiers (can be inferred from the instance)
-            //ram->inc_ptr(gd);
-            //ram->dec_ptr(gd);
-            //ram->set_ptr(gd);
-            /// 4.b Register conditionals and modifiers
+            /// 2.a Register conditionals and modifiers
             ram->test_reg(grounder.get(), gd, {"action_"});
-            //ram->cmp_regs(grounder.get(), gd);
-            ram->set_reg(grounder.get(), gd, {"action_"}); // either to 0 or 1
-            /// 4.c Generate features
-            gd->add_flag(std::make_unique<variables::ZeroFlag>());
-            //gd->add_flag(std::make_unique<variables::CarryFlag>());
 
-            /// 5.(PRE) ActionSchemas has a fix upperbound of program lines, so fix it here (right before IFs):
+            ram->set_reg(grounder.get(), gd, {"action_"}); // either to 0 or 1
+            /// 2.b Generate features
+            gd->add_flag(std::make_unique<variables::ZeroFlag>());
+
+            /// 3.(PRE) ActionSchemas has a fix upperbound of program lines, so fix it here (right before IFs):
             size_t n_test_ins = 0u, n_set_ins = 0u;
             for(const auto& ins : gd->get_instructions()){
                 auto test_ins = dynamic_cast<instructions::RegisterTest*>(ins);
@@ -64,14 +52,9 @@ namespace theory{
             assert( (n_set_ins&1)==0u );
             gd->set_program_lines(1u + 2*n_test_ins + (n_set_ins/2));
 
-            /// 5. Call Ifs constructor
+            /// 4. Call Ifs constructor
             auto ifs = std::make_unique<core::Ifs>();
             ifs->make_ifs(grounder.get(), gd);
-        }
-
-        // ToDo: would it be better to add a is_conditional flag in instruction.h and derived classes?
-        static bool is_conditional_name(const std::string &ins_name) {
-            return ins_name.substr(0, 4) == "test";
         }
 
         static std::vector<value_t> evaluate_test_instruction(GeneralizedDomain *gd,
@@ -107,8 +90,7 @@ namespace theory{
             auto ins_if = dynamic_cast<instructions::If*>(new_ins);
 
             /// 1.a if the previous instruction is TEST, the current instruction must be an IF
-            bool is_prev_cond = program_line>0 and
-                                is_conditional_name(p->get_instruction(program_line-1)->get_name(false));
+            bool is_prev_cond = (program_line>0) and p->get_instruction(program_line-1)->is_conditional();
 
             if(ins_if == nullptr and is_prev_cond) return false;
 
@@ -119,7 +101,7 @@ namespace theory{
 
                 /// 1.c An IF must be programmed after a TEST or CMP instruction
                 auto prev_ins = p->get_instruction(program_line-1);
-                if(not is_conditional_name(prev_ins->get_name(false))) return false;
+                if(not prev_ins->is_conditional()) return false;
 
                 /// 1.d An IF must be a forward jump to last line
                 auto dest_line = ins_if->get_destination_line();
@@ -128,8 +110,7 @@ namespace theory{
             }
 
             /// 2. TEST must be programmed right after an IF and not in the last 4 lines
-            auto new_ins_name = new_ins->get_name(false);
-            if(is_conditional_name(new_ins_name)){
+            if(new_ins->is_conditional()){
                 /// 2.a First line can be used for a conditional
                 if(program_line == 0) return true;
                 /// 2.b Last 4 lines cannot be used by a conditional

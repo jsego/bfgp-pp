@@ -1,0 +1,17 @@
+[INSTANCE]: briefcase_o1
+[DOMAIN]: briefcase
+
+[OBJECTS]:
+l0:location
+l1:location
+o0:portable
+
+[INIT]:
+(action_take_out(o0)=1)
+(at(o0,l1)=1)
+(is_at(l1)=1)
+(in(o0)=1)
+
+[GOAL]:
+(at(o0,l1)=1)
+(is_at(l1)=1)

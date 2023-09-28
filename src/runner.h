@@ -27,6 +27,13 @@ namespace runner{
             for(size_t instance_id = 1; instance_id < gpp->get_num_instances(); ++instance_id)
                 gpp->deactivate_instance(instance_id);
         }
+        auto mode_name = arg_parser->get_mode();
+        std::vector<std::unique_ptr<Program>> programs;
+        if(mode_name == "repair"){
+            programs = factories::make_programs(arg_parser.get(), gpp.get());
+            if((int)programs[programs.size()-1]->get_num_instructions() != arg_parser->get_program_lines())
+                arg_parser->helper("The input program and the input number of program lines differ");
+        }
 
         auto engine = factories::make_engine(arg_parser.get(), std::move(gpp));
         stats_info->add_timer("engine");
@@ -34,7 +41,7 @@ namespace runner{
         stats_info->add_info_msg("Searching...");
 
         // Call the engine solver to search for a generalized plan (or program)
-        auto resulting_node = engine->solve();
+        auto resulting_node = engine->solve(std::move(programs));
         stats_info->add_timer("search");
 
         auto dest_folder_file =
@@ -43,14 +50,16 @@ namespace runner{
                         arg_parser->get_problem_folder(),
                         arg_parser->get_program_lines(),
                         arg_parser->get_evaluation_function_names());
-        auto dest_file_name = utils::join(dest_folder_file);
+        auto dest_file_name = (arg_parser->get_output_file().empty()?
+                utils::join(dest_folder_file):
+                dest_folder_file.first+arg_parser->get_output_file());
 
         if(resulting_node != nullptr ){
             auto resulting_program = resulting_node->get_program();
             utils::print_to_file(dest_file_name+".prog", resulting_program->to_string(false));
-            auto output_file = arg_parser->get_output_file();
+            /*auto output_file = arg_parser->get_output_file();
             if(not output_file.empty())
-                utils::print_to_file(output_file, resulting_program->to_string(false));
+                utils::print_to_file(output_file, resulting_program->to_string(false));*/
             stats_info->add_info_msg("SOLUTION FOUND!!!\n" + resulting_program->to_string(false));
         }
         else{
@@ -92,7 +101,16 @@ namespace runner{
             }
         }
         stats_info->add_info_msg("Number of instances: " + std::to_string(gpp->get_num_instances()));
-        if( !vps.empty() ) stats_info->add_info_msg("GOAL ACHIEVED!");
+        bool all_goals = false;
+        if(!vps.empty()) {
+            assert(vps.size() == gpp->get_num_instances());
+            all_goals = true;
+            int error = 0;
+            for (size_t idx = 0; idx < gpp->get_num_instances(); ++idx) {
+                all_goals &= prog->is_goal(vps[idx], gpp->get_instance(idx), error);
+            }
+        }
+        if(all_goals) stats_info->add_info_msg("GOAL ACHIEVED!");
         else stats_info->add_info_msg("INVALID GENERAL PLAN :(");
     }
 
@@ -184,7 +202,9 @@ namespace runner{
                                                             arg_parser->get_evaluation_function_names());
         auto dest_file_name = utils::join(dest_folder_file);
 
-        auto prog = factories::make_program(arg_parser.get(), gpp.get());
+        auto programs = factories::make_programs(arg_parser.get(), gpp.get());
+        assert(not programs.empty());
+        std::unique_ptr<Program> prog = std::move(programs[programs.size()-1]); // pick only latest program
 
         stats_info->add_timer("program");
         stats_info->timers_info("Program loaded:", "gpp", "program");

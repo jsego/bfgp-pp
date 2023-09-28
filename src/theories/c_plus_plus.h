@@ -19,9 +19,6 @@
 namespace theory{
     class CPlusPlus : public Theory{
     public:
-
-        typedef std::tuple<std::string, int, size_t, size_t> loop_pattern_t;
-
         CPlusPlus() : Theory("CPP"){}
 
         static void build_theory(GeneralizedDomain *gd){
@@ -57,166 +54,242 @@ namespace theory{
             ifs->make_ifs(grounder.get(), gd);
         }
 
-
-        // ToDo: CPP specific function
-        static std::vector<loop_pattern_t> get_loops_pattern(Program* p) {
-            std::vector<loop_pattern_t> loops_pattern;
-            auto instructions = p->get_instructions();
-            for (size_t line = 0; line < instructions.size(); line++) {
-                auto ins_for = dynamic_cast<instructions::For*>(instructions[line]);
-                if (ins_for) {
-                    loops_pattern.emplace_back(
-                            std::make_tuple(
-                                    ins_for->get_pointer()->get_type()->get_name(),
-                                    ins_for->get_modifier(),
-                                    line,
-                                    ins_for->get_destination_line()));
-                }
-            }
-            return loops_pattern;
-        }
-
-        // ToDo: would it be better to add a is_conditional flag in instruction.h and derived classes?
-        static bool is_conditional_name(const std::string &ins_name) {
-            return ((ins_name.substr(0, 4) == "test") or
-                    (ins_name.substr(0, 3) == "cmp"));
-        }
-
-        [[nodiscard]] bool check_syntax_constraints(Program *p, size_t program_line, instructions::Instruction *new_ins) override{
-            /// Issue #8: do not loop over single object pointers (ToDo: no access to pointer domain from the instance)
-
+        bool check_endfor_constraints(Program *p, size_t program_line, instructions::Instruction *new_ins){
             auto endfor_ins = dynamic_cast<instructions::EndFor*>(new_ins);
-            if(endfor_ins) return false;
-            //if (dynamic_cast<instructions::EndFor*>(new_ins)) return false;  // EndFor only programmed once For is programmed
+            if(endfor_ins) {
+                auto orig_line = endfor_ins->get_original_line();
+                if(program_line <= orig_line) return false;
+                auto for_ins = dynamic_cast<instructions::For*>(p->get_instruction(orig_line));
+                if(nullptr == for_ins) return false;
+                if(program_line != for_ins->get_destination_line()) return false;
+                if(for_ins->get_pointer() != endfor_ins->get_pointer()) return false;
+                if(for_ins->get_modifier() != endfor_ins->get_modifier()) return false;
+                return true;
+            }
+            // Otherwise, only EndFor instructions can be programmed in For destination lines
+            for(size_t prev_line = 0; prev_line < program_line; ++prev_line){
+                auto for_ins = dynamic_cast<instructions::For*>(p->get_instruction(prev_line));
+                if(nullptr == for_ins) continue;
+                if(for_ins->get_destination_line() == program_line) return false;
+            }
+            return true;
+        }
 
-            /// 1. IF syntactic constraints
+        bool check_if_constraints(Program *p, size_t program_line, instructions::Instruction *new_ins){
             auto ins_if = dynamic_cast<instructions::If*>(new_ins);
-
-            /// 1.a if the previous instruction is CMP or TEST, the current instruction must be an IF
             auto prev_ins = (program_line>0?p->get_instruction(program_line-1): nullptr);
-            //bool is_prev_cond = program_line>0 and
-            //                    is_conditional_name(p->get_instruction(program_line-1)->get_name(false));
-            if(ins_if == nullptr and prev_ins != nullptr and is_conditional_name(prev_ins->get_name(false)))
-                return false;
-
-            if (ins_if) {
-                /// 1.b An IF cannot be programmed in the first line
+            if(ins_if){
+                /// 2.a An IF cannot be programmed in the first line
                 if(program_line == 0) return false;
 
-                /// 1.c An IF must be programmed after a TEST or CMP instruction
-                //auto prev_ins = p->get_instruction(program_line-1);
-                //if(not is_conditional_name(prev_ins->get_name(false))) return false;
-                if(prev_ins == nullptr or not is_conditional_name(prev_ins->get_name(false))) return false;
+                /// 2.b An IF must be programmed after a TEST or CMP instruction
+                if((nullptr == prev_ins) or (not prev_ins->is_conditional())) return false;
 
-                /// 1.d An IF must be a forward jump and size>1, i.e., destination line >= program line + 2
+                /// 2.c An IF must be a forward jump and size>1, i.e., destination line >= program line + 2
                 auto dest_line = ins_if->get_destination_line();
                 if(dest_line < program_line+2) return false;
 
-                /// 1.e An IF cannot be programmed in the last two lines
+                /// 2.d An IF cannot be programmed in the last two lines
                 if(program_line+2 >= p->get_num_instructions()) return false;
 
-                /// 1.f Structured programming requires that loops programmed before the IF
-                /// do not end inside the IF instruction
-                for (auto next_line = program_line + 1; next_line < dest_line; next_line++) {
-                    if (dynamic_cast<instructions::EndFor*>(p->get_instruction(next_line)))
-                        return false;
+                /// 2.e Structured programming requires that the IF either encapsulates loops or is encapsulated by them
+                for(size_t for_orig_line = 0; for_orig_line < dest_line; for_orig_line++){
+                    auto for_ins = dynamic_cast<instructions::For*>(p->get_instruction(for_orig_line));
+                    if(nullptr == for_ins) continue;  // Skip the instruction if it is not a FOR
+                    auto for_dest_line = for_ins->get_destination_line();
+                    if(for_dest_line < program_line) continue; // FOR and IF do not overlap
+                    if(for_orig_line < program_line and dest_line <= for_dest_line) continue; // FOR encapsulates IF
+                    if(program_line < for_orig_line and for_dest_line < dest_line) continue; // IF encapsulates FOR
+                    // Otherwise, the IF and the FOR do not follow the structured programming paradigm
+                    return false;
                 }
 
-                /// 1.g Structured programming requires previous IF instructions to jump before the starting
-                /// line of the current IF, or to the same destination line or after
-                for (size_t prev_line = 0; prev_line < program_line; prev_line++) {
-                    auto ins_prev_if = dynamic_cast<instructions::If*>(p->get_instruction(prev_line));
-                    if (ins_prev_if) {
-                        auto prev_dest_line = ins_prev_if->get_destination_line();
-                        if((prev_dest_line >= program_line) and (prev_dest_line < dest_line)) return false;
-                    }
+                /// 2.f.1 Structured programming requires nested IF instructions to be well encapsulated
+                for (size_t prev_if_orig_line = 0; prev_if_orig_line < dest_line; prev_if_orig_line++) {
+                    auto ins_prev_if = dynamic_cast<instructions::If*>(p->get_instruction(prev_if_orig_line));
+                    if(nullptr == ins_prev_if) continue; // Skip the instruction if it is not an IF
+                    auto prev_if_dest_line = ins_prev_if->get_destination_line();
+                    if(prev_if_dest_line < program_line) continue; // Both IFs do not overlap
+                    // Previous IF instruction encapsulates the new IF instruction
+                    if((prev_if_orig_line+1 < program_line) and (prev_if_dest_line >= dest_line)) continue;
+                    // New IF instruction encapsulates the previous IF instruction
+                    if((program_line+1 < prev_if_orig_line) and (dest_line >= prev_if_dest_line)) continue;
+                    // Otherwise, the IF instructions do not follow the structured programming paradigm
+                    return false;
                 }
+                /// 2.f.2 (Special case) destination line of the new IF cannot contain an IF instruction
+                if(dynamic_cast<instructions::If*>(p->get_instruction(dest_line))) return false;
+
+                return true;
+            }
+            /// 2.g If the previous instruction is a conditional, the current instruction must be an IF
+            if((nullptr != prev_ins) and prev_ins->is_conditional()) return false;
+            return true;
+        }
+
+        bool check_conditional_constraints(Program *p, size_t program_line){
+            /// 3.a A conditional instruction cannot be programmed in the last two lines
+            if(program_line + 2 >= p->get_num_instructions()) return false;
+
+            /// 3.b A conditional instruction cannot be programmed in...
+            for(size_t line = 0; line < program_line; line++){
+                /// 3.b.1 the last two lines of a FOR loop
+                auto for_ins = dynamic_cast<instructions::For*>(p->get_instruction(line));
+                if(for_ins and line < program_line and program_line < for_ins->get_destination_line() and
+                    for_ins->get_destination_line() <= program_line+2) return false;
+                /// 3.b.2 the last line of an IF instruction
+                auto if_ins = dynamic_cast<instructions::If*>(p->get_instruction(line));
+                if(if_ins and line < program_line and program_line < if_ins->get_destination_line() and
+                    if_ins->get_destination_line() <= program_line+1) return false;
             }
 
-            /// 2. Issue #10: if the instruction is a TEST or CMP but there is an ENDFOR in the next two lines, skip it
-            bool is_cond = is_conditional_name(new_ins->get_name(false));
-            if(is_cond and program_line + 2 < p->get_num_instructions()) { // A conditional cannot be programmed in the last two lines
-                for (auto next_line = program_line+1; next_line<program_line+3; next_line++) {
-                    auto next_endfor = dynamic_cast<instructions::EndFor*>(p->get_instruction(next_line));
-                    if (next_endfor) return false;
-                }
-            }
-            else if(is_cond) return false;
+            return true;
+        }
 
-            /// 3. If it is a PointerAction, it must be checked that the pointer is not inside a loop that modifies it
+        bool check_pointer_action_constraints(Program *p, size_t program_line, instructions::Instruction *new_ins){
             auto pa = dynamic_cast<instructions::PointerAction*>(new_ins);
-            if ((not is_cond) and pa) { /// conditionals should not be checked, since they do not modify pointers
-                auto pa_ptrs = pa->get_pointers();
-                for(int prev_line = int(program_line)-1; prev_line >= 0; prev_line--){
-                    auto prev_for = dynamic_cast<instructions::For*>(p->get_instruction(prev_line));
-                    if(nullptr == prev_for) continue;
-                    if((prev_for->get_destination_line() > program_line) and (prev_for->get_pointer() == pa_ptrs[0]))
-                        return false;
-                }
-            }
+            /// 4.a check only PointerActions that are not TEST or CMP
+            if(nullptr == pa or pa->is_conditional()) return true;
 
-            /// 4. FOR syntactic constraints
-            auto ins_for = dynamic_cast<instructions::For*>(new_ins);
-            if (ins_for) {
-                auto for_ptr = ins_for->get_pointer();
-                auto dest_line = ins_for->get_destination_line();
-                /// 4.a A FOR is a forward jump with size>1
-                if(dest_line < program_line+2) return false;
-
-                for (int prev_line = program_line - 1; prev_line >= 0; prev_line--) {
-                    auto prev_for = dynamic_cast<instructions::For*>(p->get_instruction(prev_line));
-                    if (prev_for) {
-                        auto prev_for_ptr = prev_for->get_pointer();
-                        auto prev_dest_line = prev_for->get_destination_line();
-                        /// If they are not nested continue
-                        if( prev_dest_line < program_line ) continue;
-                        /// 4.b Otherwise, current FOR must be exactly inside previous FOR
-                         if( prev_dest_line <= dest_line ) return false;
-                        /// 4.c Nested loops cannot be over the same pointer variables
-                        if( for_ptr == prev_for_ptr ) return false;
-                    }
-                }
-
-                /// 4.d A previous IF instruction can not end up in the middle of a FOR instruction
-                for (int prev_line = program_line - 1; prev_line >= 0; prev_line--) {
-                    auto prev_if = dynamic_cast<instructions::If*>(p->get_instruction(prev_line));
-                    if (prev_if) {
-                        auto dest_if_line = prev_if->get_destination_line();
-                        if (program_line < dest_if_line and dest_if_line <= dest_line) return false;
-                    }
-                }
-
-                if(program_line > 0) {
-                    /// 4.e If the previous instruction is a PointerAction, it shouldn't modify the same for_ptr
-                    auto ins_ptr = dynamic_cast<instructions::PointerAction*>(p->get_instruction(program_line - 1));
-                    if(ins_ptr and ins_ptr->get_pointers()[0] == for_ptr) return false;
-                }
-
-                /// 4.X This must be the last constraint to check
-                // Check at this point if the loop pattern is new, getting the current loop pattern variables and
-                // adding them to the partial program loop pattern.
-                auto new_loop_pattern = get_loops_pattern(p);
-                // Add new tuple
-                new_loop_pattern.emplace_back(std::make_tuple(ins_for->get_pointer()->get_type()->get_name(),
-                                                              ins_for->get_modifier(),
-                                                              program_line,
-                                                              dest_line));
-                if(_loop_patterns.find(new_loop_pattern) != _loop_patterns.end())
+            /// 4.b check whether there is a loop that contains this PointerAction where both modify the same pointer
+            auto pa_modified_ptr = pa->get_pointers()[0];
+            for(size_t line = 0; line < program_line; line++){
+                auto for_ins = dynamic_cast<instructions::For*>(p->get_instruction(line));
+                if(nullptr == for_ins) continue;
+                // Return false if the new instruction is inside a loop and modify the loop pointer
+                if(program_line < for_ins->get_destination_line() and (for_ins->get_pointer() == pa_modified_ptr))
                     return false;
             }
+            return true;
+        }
+
+        bool check_for_pointer_constraints(variables::Pointer* ptr1, variables::Pointer* ptr2){
+            /// Returns true when the given pointers are of different types, or if ptr1 is lexicographically smaller
+            /// than ptr2 when they are of the same type. Otherwise, it returns false.
+            if(ptr1->get_type() != ptr2->get_type()) return true;
+            if(ptr1->get_name() < ptr2->get_name()) return true;
+            return false;
+            // ToDo (Issue #2): the idea is to force exploration of typed pointers in a specific and unique order
+        }
+
+        bool check_for_constraints(Program *p, size_t program_line, instructions::For *for_ins){
+            auto for_ptr = for_ins->get_pointer();
+            auto dest_line = for_ins->get_destination_line();
+            /// 5.a A FOR is a forward jump with size>1
+            if(dest_line < program_line+2) return false;
+
+            /// 5.b Structured programming require FOR loops either to not overlap or to be one inside the other
+            for(size_t line = 0; line < dest_line; line++){
+                auto prev_for_ins = dynamic_cast<instructions::For*>(p->get_instruction(line));
+                if(nullptr == prev_for_ins) continue;
+                auto prev_for_ptr = prev_for_ins->get_pointer();
+                auto prev_dest_line = prev_for_ins->get_destination_line();
+                /// 5.b.1 FOR loops do not overlap
+                if(prev_dest_line < program_line) continue;
+                /// 5.b.2 Otherwise, they overlap, but they cannot modify the same pointer
+                if(prev_for_ptr == for_ptr) return false;
+                /// 5.b.3 Previous FOR is inside the new FOR, and if they modify the same pointer types, the new FOR
+                ///       must use a lexicographically smaller one
+                if(program_line < line and
+                   prev_dest_line < dest_line and
+                   check_for_pointer_constraints(for_ptr, prev_for_ptr)) continue;
+                /// 5.b.4 New FOR is inside previous FOR, and if they modify the same pointer types, the previous FOR
+                ///       must use a lexicographically smaller one
+                if(line < program_line and
+                   dest_line < prev_dest_line and
+                   check_for_pointer_constraints(prev_for_ptr, for_ptr)) continue;
+                /// 5.b.5 Any other case is an incorrect loop nesting
+                return false;
+            }
+
+            /// 5.c Structure programming requires FOR and IF instructions to be one inside the other
+            for(size_t line=0; line < dest_line; line++){
+                auto if_ins = dynamic_cast<instructions::If*>(p->get_instruction(line));
+                if(nullptr == if_ins) continue;
+                auto if_dest_line = if_ins->get_destination_line();
+                if(if_dest_line <= program_line) continue; // The FOR and the IF do not overlap
+                if(line < program_line and dest_line < if_dest_line) continue; // The FOR is inside the IF
+                if(program_line < line and if_dest_line <= dest_line) continue; // The IF is inside the FOR
+                return false; // Otherwise, they are not structured
+            }
+
+            /// 5.d FOR and PointerAction constraints
+            if(program_line > 0){
+                /// 5.d.1 If the previous instruction is a PointerAction, it shouldn't modify the same for_ptr
+                auto ins_ptr = dynamic_cast<instructions::PointerAction*>(p->get_instruction(program_line - 1));
+                if(ins_ptr and ins_ptr->get_pointers()[0] == for_ptr) return false;
+            }
+            /// 5.d.2 A FOR cannot be programmed if there is a PointerAction inside that modify the same pointer
+            for(size_t line = program_line+1; line < dest_line; line++){
+                auto pa = dynamic_cast<instructions::PointerAction*>(p->get_instruction(line));
+                if(nullptr == pa or pa->is_conditional()) continue;
+                if(pa->get_pointers()[0] == for_ptr) return false;
+            }
+
+            return true;
+        }
+
+        [[nodiscard]] bool check_syntax_constraints(Program *p, size_t program_line, instructions::Instruction *new_ins) override{
+            /// 1. EndFor syntactic constraints
+            auto endfor_ins = dynamic_cast<instructions::EndFor*>(new_ins);
+            bool endfor_constraints = check_endfor_constraints(p, program_line, new_ins);
+            if(endfor_ins) return endfor_constraints;  // If the instruction is an EndFor return its result
+            else if(not endfor_constraints) return false; // Return false if it should be an EndFor, but it is not
+
+            /// 2. IF syntactic constraints
+            auto ins_if = dynamic_cast<instructions::If*>(new_ins);
+            bool if_constraints = check_if_constraints(p, program_line, new_ins);
+            if(ins_if) return if_constraints; // If the instruction is an IF return its result
+            else if(not if_constraints) return false; // Return false if it should be an IF, but it is not
+
+            /// 3. TEST and CMP syntactic constraints
+            if(new_ins->is_conditional())
+                return check_conditional_constraints(p, program_line);
+
+            /// 4. PointerAction syntactic constraints
+            auto pa = dynamic_cast<instructions::PointerAction*>(new_ins);
+            // If it is non-conditional PointerAction, return its results
+            if(nullptr != pa and (not pa->is_conditional()))
+                return check_pointer_action_constraints(p, program_line, new_ins);
+
+            /// 5. FOR syntactic constraints
+            auto ins_for = dynamic_cast<instructions::For*>(new_ins);
+            if(ins_for)
+                return check_for_constraints(p, program_line, ins_for);
 
             // Any other case is correct
             return true;
         }
 
-        void update(Program *p, instructions::Instruction *last_ins) override{
-            auto ins_for = dynamic_cast<instructions::For*>(last_ins);
-            if(ins_for)
-                _loop_patterns.insert(get_loops_pattern(p));
-        }
+        [[nodiscard]] bool check_semantic_constraints(
+                GeneralizedPlanningProblem *gpp,
+                Program *p,
+                size_t program_line,
+                instructions::Instruction *new_ins){
+            /// Issue #9: do not modify or loop over single object pointers
+            ObjectType *obj_type = nullptr;
+            auto ins_for = dynamic_cast<instructions::For*>(new_ins);
+            if(ins_for) obj_type = ins_for->get_pointer()->get_type();
+            auto ins_inc = dynamic_cast<instructions::PointerInc*>(new_ins);
+            if(ins_inc) obj_type = ins_inc->get_pointers()[0]->get_type();
+            auto ins_dec = dynamic_cast<instructions::PointerDec*>(new_ins);
+            if(ins_dec) obj_type = ins_dec->get_pointers()[0]->get_type();
+            auto ins_set = dynamic_cast<instructions::PointerSet*>(new_ins);
+            if(ins_set) obj_type = ins_set->get_pointers()[0]->get_type();
 
-    private:
-        std::set<std::vector<loop_pattern_t>> _loop_patterns;
+            if(obj_type){
+                auto obj_type_name = obj_type->get_name();
+                auto num_instances = gpp->get_num_instances();
+                for(size_t instance_idx = 0; instance_idx < num_instances; ++instance_idx){
+                    auto instance = gpp->get_instance(instance_idx);
+                    if( 1 < instance->get_typed_objects(obj_type_name).size())
+                        return true;
+                }
+                return false;  // return false if no input instance have more than 1 object of this kind
+            }
+
+            return true;
+        }
     };
 }
 

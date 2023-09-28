@@ -1,0 +1,23 @@
+[INSTANCE]: fibo-4
+[DOMAIN]: FIBONACCI
+
+[OBJECTS]:
+p0:object
+p1:object
+p2:object
+p3:object
+p4:object
+
+[INIT]:
+(vector(p0)=0)
+(vector(p1)=1)
+(vector(p2)=0)
+(vector(p3)=0)
+(vector(p4)=0)
+
+[GOAL]:
+(vector(p0)=0)
+(vector(p1)=1)
+(vector(p2)=1)
+(vector(p3)=2)
+(vector(p4)=3)

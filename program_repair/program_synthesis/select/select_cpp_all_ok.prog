@@ -1,0 +1,8 @@
+0. for(ptr_object_0++,4)
+1. cmp(vector(ptr_object_0),vector(ptr_object_1))
+2. if((zf=0)(cf=0),4)
+3. set(ptr_object_1,ptr_object_0)
+4. endfor(ptr_object_0++,0)
+5. select(ptr_object_1)
+6. end
+

@@ -1,0 +1,33 @@
+[INSTANCE]: find-11
+[DOMAIN]: FIND
+
+[OBJECTS]:
+p0:object
+p1:object
+p2:object
+p3:object
+p4:object
+p5:object
+p6:object
+p7:object
+p8:object
+p9:object
+p10:object
+
+[INIT]:
+(target()=2)
+(counter()=0)
+(vector(p0)=4)
+(vector(p1)=3)
+(vector(p2)=4)
+(vector(p3)=2)
+(vector(p4)=2)
+(vector(p5)=0)
+(vector(p6)=1)
+(vector(p7)=3)
+(vector(p8)=2)
+(vector(p9)=3)
+(vector(p10)=0)
+
+[GOAL]:
+(counter()=3)

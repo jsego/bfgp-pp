@@ -1,0 +1,12 @@
+[DOMAIN]: SELECT
+
+[FUNCTIONS]: 
+vector(?o:object)
+selected(?o:object)
+[ACTIONS]: 
+[ACTION]: select(?x:object)
+[TYPE]: memory
+[PRECONDITIONS]:
+(selected(?x)=0)
+[EFFECTS]:
+(selected(?x)=1)

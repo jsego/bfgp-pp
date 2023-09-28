@@ -40,7 +40,7 @@ public:
 	virtual vec_value_t f(Node* node) = 0;
 	
 	// Solve the problem starting from init Node
-	virtual std::shared_ptr<Node> solve() = 0;
+	virtual std::shared_ptr<Node> solve(std::vector<std::unique_ptr<Program>> roots = {}) = 0;
 	
 	// Add a new heuristic to the engine
 	void add_evaluation_function(std::unique_ptr<evaluation_functions::EvaluationFunction> new_ef ){

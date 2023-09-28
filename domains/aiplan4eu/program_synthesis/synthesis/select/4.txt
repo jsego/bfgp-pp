@@ -1,0 +1,28 @@
+[INSTANCE]: select-5
+[DOMAIN]: SELECT
+
+[OBJECTS]:
+p0:object
+p1:object
+p2:object
+p3:object
+p4:object
+
+[INIT]:
+(vector(p0)=24)
+(selected(p0)=0)
+(vector(p1)=3)
+(selected(p1)=0)
+(vector(p2)=56)
+(selected(p2)=0)
+(vector(p3)=72)
+(selected(p3)=0)
+(vector(p4)=0)
+(selected(p4)=0)
+
+[GOAL]:
+(selected(p0)=0)
+(selected(p1)=0)
+(selected(p2)=0)
+(selected(p3)=0)
+(selected(p4)=1)

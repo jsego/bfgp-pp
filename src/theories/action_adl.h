@@ -35,27 +35,38 @@ namespace theory{
             auto for_loops = std::make_unique<core::Fors>();
             for_loops->make_fors(gd, 1);
 
-            /// 3. Call STRIPS constructor
-            //auto strips = std::make_unique<core::STRIPS>(grounder.get(), gd);
-
-            /// 4. Call RAM constructor
+            /// 3. Call RAM constructor
             auto ram = std::make_unique<core::RAM>();
-            /// 4.a Pointer modifiers
-            //ram->inc_ptr(gd);
-            //ram->dec_ptr(gd);
-            //ram->set_ptr(gd);
-            //ram->cmp_ptrs(gd);
-            /// 4.b Register conditionals and modifiers
+            /// 3.a Register conditionals and modifiers
             ram->test_reg(grounder.get(), gd, {"action_"});
-            //ram->cmp_regs(grounder.get(), gd);
             ram->set_reg(grounder.get(), gd, {"action_"}); // either to 0 or 1
-            /// 4.c Generate features
+            /// 3.b Generate features
             gd->add_flag(std::make_unique<variables::ZeroFlag>());
-            //gd->add_flag(std::make_unique<variables::CarryFlag>());
 
-            /// 5. Call Ifs constructor
+            /// 4. Call Ifs constructor
             auto ifs = std::make_unique<core::Ifs>();
             ifs->make_ifs(grounder.get(), gd);
+        }
+
+        bool check_endfor_constraints(Program *p, size_t program_line, instructions::Instruction *new_ins){
+            auto endfor_ins = dynamic_cast<instructions::EndFor*>(new_ins);
+            if(endfor_ins) {
+                auto orig_line = endfor_ins->get_original_line();
+                if(program_line <= orig_line) return false;
+                auto for_ins = dynamic_cast<instructions::For*>(p->get_instruction(orig_line));
+                if(nullptr == for_ins) return false;
+                if(program_line != for_ins->get_destination_line()) return false;
+                if(for_ins->get_pointer() != endfor_ins->get_pointer()) return false;
+                if(for_ins->get_modifier() != endfor_ins->get_modifier()) return false;
+                return true;
+            }
+            // Otherwise, only EndFor instructions can be programmed in For destination lines
+            for(size_t prev_line = 0; prev_line < program_line; ++prev_line){
+                auto for_ins = dynamic_cast<instructions::For*>(p->get_instruction(prev_line));
+                if(nullptr == for_ins) continue;
+                if(for_ins->get_destination_line() == program_line) return false;
+            }
+            return true;
         }
 
         [[nodiscard]] bool check_syntax_constraints(Program *p, size_t program_line, instructions::Instruction *new_ins) override {
@@ -83,8 +94,9 @@ namespace theory{
             }
 
             auto endfor_ins = dynamic_cast<instructions::EndFor*>(new_ins);
-            if(endfor_ins) return false;
-            //if (dynamic_cast<instructions::EndFor*>(new_ins)) return false;  // EndFor only programmed once For is programmed
+            auto endfor_constraints = check_endfor_constraints(p, program_line, new_ins);
+            if(endfor_ins) return endfor_constraints;
+            else if(not endfor_constraints) return false;
 
             /// 1. IF syntactic constraints
             auto ins_if = dynamic_cast<instructions::If*>(new_ins);

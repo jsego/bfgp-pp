@@ -86,7 +86,7 @@ public:
     }
 	
 	bool is_goal(ProgramState* ps, Instance* ins, int &error ) const{
-        // std::cout << "Instance#" << ins->get_instance_id() << ":\n" << ps->to_string() << "\n";
+        //std::cout << "Instance#" << ins->get_instance_id() << ":\n" << ps->to_string() << "\n";
 		auto line = ps->get_line();
         auto end = dynamic_cast<instructions::End*>( _instructions[line] );
         if( end == nullptr ) return false;
@@ -94,10 +94,6 @@ public:
         if(not is_goal) error = ERROR_INCORRECT_PROGRAM; // ERROR 1: Incorrect program
         return is_goal; // It is an end instruction and reaches all goal states
     }
-
-    /*[[nodiscard]] static bool is_conditional(const std::string& ins_name) {
-        return (ins_name.substr(0,3) == "cmp" or ins_name.substr(0,4) == "test");
-    }*/
 
     // ToDo: evaluation function dependant - maybe some program specialization would work
     /*bool check_deadend(ProgramState *ps,
@@ -212,7 +208,7 @@ public:
         return ptr_assigned;
     }
 
-    std::vector<ProgramState*> run(GeneralizedPlanningProblem *gpp, bool save_pddl_plans = false){
+    [[maybe_unused]] std::vector<ProgramState*> run(GeneralizedPlanningProblem *gpp, bool save_pddl_plans = false){
         reset_performance_variables();
         if(save_pddl_plans){
             _pddl_plans.clear();

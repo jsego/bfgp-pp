@@ -1,0 +1,10 @@
+0. swap(ptr_object_0,ptr_object_1)
+1. cmp(vector(ptr_object_0),vector(ptr_object_1))
+2. empty
+3. set(ptr_object_0,ptr_object_1)
+4. inc(ptr_object_0)
+5. empty
+6. inc(ptr_object_1)
+7. empty
+8. end
+

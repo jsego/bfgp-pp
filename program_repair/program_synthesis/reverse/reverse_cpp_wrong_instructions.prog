@@ -1,0 +1,8 @@
+0. for(ptr_object_0--,5)
+1. dec(ptr_object_1)
+2. swap(ptr_object_1,ptr_object_0)
+3. inc(ptr_object_1)
+4. swap(ptr_object_0,ptr_object_1)
+5. endfor(ptr_object_0--,0)
+6. end
+

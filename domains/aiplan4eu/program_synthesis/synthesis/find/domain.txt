@@ -1,0 +1,16 @@
+[DOMAIN]: FIND
+
+[TYPES]:
+[FUNCTIONS]:
+vector(?o:object)
+counter()
+target()
+[ACTIONS]:
+
+[ACTION]: accumulate(?o:object)
+[TYPE]: memory
+[PRECONDITIONS]:
+(vector(?o)=target())
+(counter()+1)
+[EFFECTS]:
+(counter()+=1)

@@ -1,0 +1,17 @@
+[INSTANCE]: reverse-3
+[DOMAIN]: REVERSE
+
+[OBJECTS]:
+p0:object
+p1:object
+p2:object
+
+[INIT]:
+(vector(p0)=53)
+(vector(p1)=87)
+(vector(p2)=25)
+
+[GOAL]:
+(vector(p0)=25)
+(vector(p1)=87)
+(vector(p2)=53)

@@ -1,0 +1,23 @@
+[INSTANCE]: tsum4
+[DOMAIN]: TRIANGULAR-SUM
+
+[OBJECTS]:
+p0:object
+p1:object
+p2:object
+p3:object
+p4:object
+
+[INIT]:
+(vector(p0)=0)
+(vector(p1)=1)
+(vector(p2)=2)
+(vector(p3)=3)
+(vector(p4)=4)
+
+[GOAL]:
+(vector(p0)=0)
+(vector(p1)=1)
+(vector(p2)=3)
+(vector(p3)=6)
+(vector(p4)=10)

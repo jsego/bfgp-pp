@@ -1,0 +1,25 @@
+[DOMAIN]: FIBONACCI
+
+[FUNCTIONS]:
+vector(?o:object)
+[ACTIONS]:
+[ACTION]: vector_add(?x:object,?y:object)
+[TYPE]: memory
+[PRECONDITIONS]:
+(vector(?x)+vector(?y))
+[EFFECTS]:
+(vector(?x)+=vector(?y))
+
+[ACTION]: vector_inc(?x:object)
+[TYPE]: memory
+[PRECONDITIONS]:
+(vector(?x)+1)
+[EFFECTS]:
+(vector(?x)+=1)
+
+[ACTION]: vector_dec(?x:object)
+[TYPE]: memory
+[PRECONDITIONS]:
+(vector(?x)-1)
+[EFFECTS]:
+(vector(?x)-=1)

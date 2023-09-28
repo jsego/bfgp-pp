@@ -30,6 +30,11 @@ namespace instructions {
             return false;
         }
 
+        virtual bool is_conditional() const{
+            /// Returns whether the instruction is a conditional, i.e., test or cmp (false by default)
+            return false;
+        }
+
         virtual value_t apply(Instance* ins, ProgramState *ps) {
             /// Modifies the program state and returns the result of the last effect (0 by default)
             return value_t{0};

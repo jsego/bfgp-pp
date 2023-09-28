@@ -56,6 +56,54 @@ namespace theory{
             ifs->make_ifs(grounder.get(), gd);
         }
 
+        void get_program_template(size_t program_lines){
+            _instruction_names = std::vector<std::string> {
+                    "for(ptr_object_0++," + std::to_string(program_lines-2)+")",
+                    "set(ptr_object_1,ptr_object_0)",
+                    "dec(ptr_object_1)",
+                    "set(ptr_object_2,ptr_object_0)",
+                    "inc(ptr_object_2)"
+            };
+            int comb=0; // equivalent to bitset<3>
+            for(size_t line = 5; line+2 < program_lines; comb++){
+                size_t dest_line = line + 11u; // at least 11 instructions added
+                //size_t dest_line = line + 7u; // at least 7 instructions added
+                std::string dest_name = std::to_string(dest_line);
+                _instruction_names.emplace_back("test(cell(ptr_object_0))"); ++line; // [line].
+                _instruction_names.emplace_back("if((zf="+std::to_string(comb&1)+"),"+dest_name+ ")"); ++line; // [line+1].
+
+                bool cmp_ptr_1 = ((comb>>1)&1)==0;
+                bool cmp_ptr_2 = ((comb>>2)&1)==0;
+                if(cmp_ptr_1){
+                    // If left should be alive but left=center, jump to dest_line
+                    _instruction_names.emplace_back("cmp(ptr_object_0,ptr_object_1)"); ++line;
+                    _instruction_names.emplace_back("if((zf=0),"+dest_name+")"); ++line;
+                }
+                else{
+                    // If left should be dead, ignore it if left=center, and jump to next_condition
+                    _instruction_names.emplace_back("cmp(ptr_object_0,ptr_object_1)"); ++line;
+                    _instruction_names.emplace_back("if((zf=0),"+std::to_string(line+3)+")"); ++line;
+                }
+                _instruction_names.emplace_back("test(cell(ptr_object_1))"); ++line; // [line+2].
+                _instruction_names.emplace_back("if((zf="+std::to_string((comb>>1)&1)+"),"+dest_name+ ")"); ++line; // [line+3].
+                if(cmp_ptr_2){
+                    // If right should be alive but center=right, jump to dest_line
+                    _instruction_names.emplace_back("cmp(ptr_object_0,ptr_object_2)"); ++line;
+                    _instruction_names.emplace_back("if((zf=0),"+dest_name+")"); ++line;
+                }
+                else{
+                    // If right should be dead, ignore it if center=right, and jump to set
+                    _instruction_names.emplace_back("cmp(ptr_object_0,ptr_object_2)"); ++line;
+                    _instruction_names.emplace_back("if((zf=0),"+std::to_string(line+3)+")"); ++line;
+                }
+                _instruction_names.emplace_back("test(cell(ptr_object_2))"); ++line; // [line+4].
+                _instruction_names.emplace_back("if((zf="+std::to_string((comb>>2)&1)+"),"+dest_name+ ")"); ++line; // [line+5].
+                _instruction_names.emplace_back("empty"); ++line; // [line+6].
+            }
+            _instruction_names.emplace_back("endfor(ptr_object_0++,0)");
+            _instruction_names.emplace_back("end");
+        }
+
         void set_initial_program(GeneralizedPlanningProblem *gpp, Program *p){
             /// Minimum program example (>9 program lines):
             /// 0. FOR;
@@ -65,55 +113,11 @@ namespace theory{
             /// 8. ENDFOR 9. END
             auto gd = gpp->get_generalized_domain();
             size_t program_lines = gd->get_program_lines();
-            std::vector<std::string> instruction_names = {
-              "for(ptr_object_0++," + std::to_string(program_lines-2)+")",
-              "set(ptr_object_1:object,ptr_object_0:object)",
-              "dec(ptr_object_1:object)",
-              "set(ptr_object_2:object,ptr_object_0:object)",
-              "inc(ptr_object_2:object)"
-            };
-            int comb=0; // equivalent to bitset<3>
-            for(size_t line = 5; line+2 < program_lines; comb++){
-                size_t dest_line = line + 11u; // at least 11 instructions added
-                //size_t dest_line = line + 7u; // at least 7 instructions added
-                std::string dest_name = std::to_string(dest_line);
-                instruction_names.emplace_back("test(cell(ptr_object_0:object))"); ++line; // [line].
-                instruction_names.emplace_back("if((zf="+std::to_string(comb&1)+"),"+dest_name+ ")"); ++line; // [line+1].
-
-                bool cmp_ptr_1 = ((comb>>1)&1)==0;
-                bool cmp_ptr_2 = ((comb>>2)&1)==0;
-                if(cmp_ptr_1){
-                    // If left should be alive but left=center, jump to dest_line
-                    instruction_names.emplace_back("cmp(ptr_object_0:object,ptr_object_1:object)"); ++line;
-                    instruction_names.emplace_back("if((zf=0),"+dest_name+")"); ++line;
-                }
-                else{
-                    // If left should be dead, ignore it if left=center, and jump to next_condition
-                    instruction_names.emplace_back("cmp(ptr_object_0:object,ptr_object_1:object)"); ++line;
-                    instruction_names.emplace_back("if((zf=0),"+std::to_string(line+3)+")"); ++line;
-                }
-                instruction_names.emplace_back("test(cell(ptr_object_1:object))"); ++line; // [line+2].
-                instruction_names.emplace_back("if((zf="+std::to_string((comb>>1)&1)+"),"+dest_name+ ")"); ++line; // [line+3].
-                if(cmp_ptr_2){
-                    // If right should be alive but center=right, jump to dest_line
-                    instruction_names.emplace_back("cmp(ptr_object_0:object,ptr_object_2:object)"); ++line;
-                    instruction_names.emplace_back("if((zf=0),"+dest_name+")"); ++line;
-                }
-                else{
-                    // If right should be dead, ignore it if center=right, and jump to set
-                    instruction_names.emplace_back("cmp(ptr_object_0:object,ptr_object_2:object)"); ++line;
-                    instruction_names.emplace_back("if((zf=0),"+std::to_string(line+3)+")"); ++line;
-                }
-                instruction_names.emplace_back("test(cell(ptr_object_2:object))"); ++line; // [line+4].
-                instruction_names.emplace_back("if((zf="+std::to_string((comb>>2)&1)+"),"+dest_name+ ")"); ++line; // [line+5].
-                instruction_names.emplace_back("empty"); ++line; // [line+6].
-            }
-            instruction_names.emplace_back("endfor(ptr_object_0++,0)");
-            instruction_names.emplace_back("end");
-            for(size_t idx=0u; idx < instruction_names.size(); idx++){
-                if(instruction_names[idx] == "empty") continue;
-                std::cout << "Checking... " <<  instruction_names[idx] << "\n";
-                auto instruction = gd->get_instruction(instruction_names[idx]);
+            get_program_template(program_lines);
+            for(size_t idx=0u; idx < _instruction_names.size(); idx++){
+                if(_instruction_names[idx] == "empty") continue;
+                std::cout << "Checking... " <<  _instruction_names[idx] << "\n";
+                auto instruction = gd->get_instruction(_instruction_names[idx]);
                 assert(instruction != nullptr);
                 p->set_instruction(idx, instruction);
             }
@@ -124,6 +128,11 @@ namespace theory{
             auto ins_set = dynamic_cast<instructions::RegisterSet*>(new_ins);
             if(ins_set) return true;
 
+            /// 2. Check if the instruction already exists from the initial program
+            if(_instruction_names[program_line] != "empty" and
+                _instruction_names[program_line] == new_ins->get_name(false))
+                return true;
+
             /// Otherwise is syntactically wrong
             return false;
         }
@@ -131,6 +140,11 @@ namespace theory{
 
         [[nodiscard]] bool check_semantic_constraints(GeneralizedPlanningProblem *gpp, Program *p, size_t program_line,
                                                       instructions::Instruction *new_ins) override{
+            /// 0. Check if the instruction already exists from the initial program
+            if(_instruction_names[program_line] != "empty" and
+               _instruction_names[program_line] == new_ins->get_name(false))
+                return true;
+
             /// 1. It must be a set, and only ptr_object_0 is writable
             auto ins_set = dynamic_cast<instructions::RegisterSet*>(new_ins);
             assert(ins_set != nullptr); // checked in syntax
@@ -324,6 +338,9 @@ namespace theory{
             /// Otherwise, it is a semantically correct instruction
             return true;
         }*/
+
+    private:
+        std::vector<std::string> _instruction_names;
     };
 }
 

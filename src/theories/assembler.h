@@ -46,12 +46,6 @@ namespace theory {
             auto terminal = std::make_unique<core::Terminal>(gd);
         }
 
-        // ToDo: would it be better to add a is_conditional flag in instruction.h and derived classes?
-        static bool is_conditional_name(const std::string &ins_name) {
-            return ((ins_name.substr(0, 4) == "test") or
-                    (ins_name.substr(0, 3) == "cmp"));
-        }
-
         [[nodiscard]] bool check_syntax_constraints(Program *p, size_t program_line, instructions::Instruction *new_ins) override{
             // 1. Check that in last line, only END can be programmed
             auto ins_end = dynamic_cast<instructions::End*>(new_ins);
@@ -94,9 +88,8 @@ namespace theory {
             }
             // 3. Check if the instruction is not a GOTO, but the previous one is TEST or CMP (which forces the next one
             // to be a GOTO instruction)
-            else if(prev_ins and is_conditional_name(prev_ins->get_name(false))){
+            else if(prev_ins and prev_ins->is_conditional())
                 return false;
-            }
 
             // 4. Check that only PlanningActions, GOTOs or ENDs can be programmed in line [n-2]
             auto ins_pa = dynamic_cast<instructions::PlanningAction*>(new_ins);

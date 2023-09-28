@@ -1,0 +1,20 @@
+0. test(connected(ptr_place_0,ptr_place_1))
+1. if((zf=0),18)
+2. test(connected(ptr_place_1,ptr_place_0))
+3. if((zf=0),18)
+4. test(at_robot(ptr_place_0))
+5. if((zf=0),18)
+6. test(at_robot(ptr_place_1))
+7. if((zf=1),18)
+8. test(visited(ptr_place_0))
+9. if((zf=0),18)
+10. set(at_robot(ptr_place_0),0)
+11. set(at_robot(ptr_place_1),1)
+12. set(visited(ptr_place_1),1)
+13. end
+14. empty
+15. empty
+16. empty
+17. empty
+18. end
+
