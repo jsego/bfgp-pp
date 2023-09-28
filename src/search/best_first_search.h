@@ -187,7 +187,7 @@ namespace search {
             std::cout << n->to_string() << "\n";
         }
 
-        [[nodiscard]] std::shared_ptr<Node> solve(std::vector<std::unique_ptr<Program>> roots) override {
+        [[nodiscard]] std::shared_ptr<Node> solve(std::vector<std::unique_ptr<Program>> roots = {}) override {
             if(roots.empty()){
                 /// Initialize the empty root program
                 roots.emplace_back(std::make_unique<Program>(_gpp.get()));
