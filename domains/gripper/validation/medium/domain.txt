@@ -1,0 +1,42 @@
+[DOMAIN]: gripper_strips
+
+[TYPES]:
+room:object
+gripper:object
+ball:object
+
+[FUNCTIONS]:
+at_robby(?x0:room)
+at(?x1:ball,?x2:room)
+free(?x3:gripper)
+carry(?x4:ball,?x5:gripper)
+
+[ACTIONS]:
+[ACTION]: move(?from:room,?to:room)
+[TYPE]: memory
+[PRECONDITIONS]:
+(at_robby(?from)=1)
+[EFFECTS]:
+(at_robby(?to)=1)
+(at_robby(?from)=0)
+
+[ACTION]: pick(?b:ball,?r:room,?g:gripper)
+[TYPE]: memory
+[PRECONDITIONS]:
+(at(?b,?r)=1)
+(at_robby(?r)=1)
+(free(?g)=1)
+[EFFECTS]:
+(carry(?b,?g)=1)
+(at(?b,?r)=0)
+(free(?g)=0)
+
+[ACTION]: drop(?b:ball,?r:room,?g:gripper)
+[TYPE]: memory
+[PRECONDITIONS]:
+(carry(?b,?g)=1)
+(at_robby(?r)=1)
+[EFFECTS]:
+(at(?b,?r)=1)
+(free(?g)=1)
+(carry(?b,?g)=0)
