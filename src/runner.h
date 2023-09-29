@@ -44,22 +44,19 @@ namespace runner{
         auto resulting_node = engine->solve(std::move(programs));
         stats_info->add_timer("search");
 
+        auto output_file = arg_parser->get_output_file();
         auto dest_folder_file =
                 utils::create_experiments_file_subdirectory(
-                        //engine->get_generalized_planning_problem()->get_generalized_domain()->get_domain()->get_name(),
+                        output_file,
                         arg_parser->get_problem_folder(),
                         arg_parser->get_program_lines(),
                         arg_parser->get_evaluation_function_names());
-        auto dest_file_name = (arg_parser->get_output_file().empty()?
-                utils::join(dest_folder_file):
-                dest_folder_file.first+arg_parser->get_output_file());
+        auto dest_file_name = utils::join(dest_folder_file);
 
         if(resulting_node != nullptr ){
             auto resulting_program = resulting_node->get_program();
             utils::print_to_file(dest_file_name+".prog", resulting_program->to_string(false));
-            /*auto output_file = arg_parser->get_output_file();
-            if(not output_file.empty())
-                utils::print_to_file(output_file, resulting_program->to_string(false));*/
+            //utils::print_to_file(output_file+".prog", resulting_program->to_string(false));
             stats_info->add_info_msg("SOLUTION FOUND!!!\n" + resulting_program->to_string(false));
         }
         else{
@@ -196,7 +193,7 @@ namespace runner{
                      std::unique_ptr<GeneralizedPlanningProblem> gpp,
                      std::unique_ptr<StatsInfo> stats_info){
         auto dest_folder_file =
-                utils::create_experiments_file_subdirectory(//gpp->get_generalized_domain()->get_domain()->get_name(),
+                utils::create_experiments_file_subdirectory(arg_parser->get_output_file(),
                                                             arg_parser->get_problem_folder(),
                                                             arg_parser->get_program_lines(),
                                                             arg_parser->get_evaluation_function_names());

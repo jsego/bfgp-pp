@@ -79,26 +79,37 @@ namespace utils{
 
     /// Get the list of subfolders to be created for the experiment
     std::pair<std::string,std::string> create_experiments_file_subdirectory(
-            //std::string out_file,
+            std::string out_file,
             const std::string& orig_problem_folder,
             int program_lines,
             const vec_str_t &evaluation_functions){
-        // Setting up output folder and file
-        std::string out_folder = "experiments/"; // set the root output folder to experiments/
-        auto problem_subfolders = split(orig_problem_folder, "/"); // last subfolder expected to be an empty string
-        if(!problem_subfolders.empty()){
-            // Add all intermediate folders
-            for(size_t idx=1; idx+2<problem_subfolders.size(); idx++)
-                out_folder += problem_subfolders[idx] + "/";
-        }
-        // Add settings info to the out_file name, e.g. program lines and evaluation functions
-        assert(problem_subfolders.size()>1u);  // At least expected "domains/[...]/subfolder/" for a problem
-        std::string out_file = problem_subfolders[problem_subfolders.size()-2];
-        out_file += "_" + std::to_string(program_lines);
-        for(const auto &efn : evaluation_functions)
-            out_file += "_" + efn;
 
-        if(!std::filesystem::exists(out_folder)){
+        std::string out_folder = "experiments/";
+
+        // If the output file is specified
+        if(not out_file.empty()){
+            auto problem_folders = split(out_file, "/");  // last is the output file
+            out_folder = "";
+            for(size_t idx=0; idx+1<problem_folders.size(); ++idx)
+                out_folder += problem_folders[idx]+"/";
+            out_file = problem_folders[problem_folders.size()-1];
+        }
+        else{ // Otherwise, set up a default output folder and file
+            auto problem_subfolders = split(orig_problem_folder, "/"); // last subfolder expected to be an empty string
+            if(!problem_subfolders.empty()){
+                // Add all intermediate folders
+                for(size_t idx=1; idx+2<problem_subfolders.size(); idx++)
+                    out_folder += problem_subfolders[idx] + "/";
+            }
+            // Add settings info to the out_file name, e.g. program lines and evaluation functions
+            assert(problem_subfolders.size()>1u);  // At least expected "domains/[...]/subfolder/" for a problem
+            out_file = problem_subfolders[problem_subfolders.size()-2];
+            out_file += "_" + std::to_string(program_lines);
+            for(const auto &efn : evaluation_functions)
+                out_file += "_" + efn;
+        }
+
+        if((not out_folder.empty()) and (not std::filesystem::exists(out_folder))){
             std::filesystem::create_directories(out_folder);
         }
 
