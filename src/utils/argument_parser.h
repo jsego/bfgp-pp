@@ -258,6 +258,11 @@ namespace utils {
                         helper("Exactly one boolean expected but " + std::to_string(arg_vals.size()) + " found.");
                     parse_verbosity(arg_vals[0]);
                 }
+                else if(arg_type == _output_file_ntype){
+                    if(arg_vals.size() != 1u)
+                        helper("Exactly one output file expected but " + std::to_string(arg_vals.size()) + " found.");
+                    parse_output_file(arg_vals[0]);
+                }
                 else if(arg_type == _save_pddl_plans_ntype){
                     if(arg_vals.size() != 1u)
                         helper("Exactly one boolean expected but " + std::to_string(arg_vals.size()) + " found.");

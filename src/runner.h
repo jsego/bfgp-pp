@@ -90,8 +90,10 @@ namespace runner{
         auto vps = prog->run( gpp, save_pddl_plans );
 
         if(save_pddl_plans){
+            if((not dest_file_name.empty()) and (dest_file_name[dest_file_name.size()-1] != '/'))
+                dest_file_name += ".";
             for(size_t instance_id = 1; instance_id <= gpp->get_num_instances(); instance_id++){
-                std::ofstream ofs(dest_file_name + ".plan." + std::to_string(instance_id));
+                std::ofstream ofs(dest_file_name + "plan." + std::to_string(instance_id));
                 for(const auto& str_act : prog->get_plan(instance_id))
                     ofs << str_act << "\n";
                 ofs.close();
