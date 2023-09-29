@@ -132,6 +132,8 @@ ECAI 2023.
 IJCAI-ECAI 2022.
 * Segovia-Aguas, J., Celorrio, S. J., Sebastiá, L., & Jonsson, A (2022b). [Scaling-up generalized planning as heuristic search with landmarks](https://ojs.aaai.org/index.php/SOCS/article/download/21765/21529),
 SoCS 2022.
-* Segovia-Aguas, J., E-Martín, Y., & Celorrio, S. J. (2022c). [Representation and Synthesis of C++ Programs for Generalized Planning](https://arxiv.org/pdf/2206.14480)
-Workshop in Generalization in Planning, IJCAI-ECAI 2022.
-* Segovia-Aguas, J., Celorrio, S. J., & Jonsson, A (2021). [Generalized planning as heuristic search](https://ojs.aaai.org/index.php/ICAPS/article/download/16005/15816)
+* Segovia-Aguas, J., E-Martín, Y., & Celorrio, S. J. (2022c). [Representation and Synthesis of C++ Programs for Generalized Planning](https://arxiv.org/pdf/2206.14480), 
+Workshop in Generalization in Planning at IJCAI-ECAI 2022.
+* Segovia-Aguas, J., Celorrio, S. J., & Jonsson, A (2021). [Generalized planning as heuristic search](https://ojs.aaai.org/index.php/ICAPS/article/download/16005/15816), ICAPS 2021.
+
+
