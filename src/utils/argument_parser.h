@@ -209,7 +209,12 @@ namespace utils {
                 _program_lines = read_program_instructions(_program_file_name).size();
                 auto folder_files = utils::split(_program_file_name,"/");
                 // Get the file name of the input program
-                _output_file = utils::split(folder_files[folder_files.size()-1],".")[0];
+                auto program_name = utils::split(folder_files[folder_files.size()-1],".")[0];
+                if(_output_file.empty())
+                    _output_file = program_name;
+                else if(_output_file[_output_file.size()-1] == '/') // if the output is a folder
+                    _output_file += program_name;
+                // else // do nothing, keep the folder/file input values
             }
             if (arg_map.find(_theory_ntype) == arg_map.end())
                 _theory_name = "cpp";

@@ -90,7 +90,8 @@ namespace utils{
         if(not out_file.empty()){
             auto problem_folders = split(out_file, "/");  // last is the output file
             out_folder = "";
-            for(size_t idx=0; idx+1<problem_folders.size(); ++idx)
+            int is_last_file = (out_file[out_file.size()-1]=='/'?0:1);
+            for(size_t idx=0; idx+is_last_file<problem_folders.size(); ++idx)
                 out_folder += problem_folders[idx]+"/";
             out_file = problem_folders[problem_folders.size()-1];
         }

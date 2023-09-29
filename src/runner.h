@@ -56,7 +56,6 @@ namespace runner{
         if(resulting_node != nullptr ){
             auto resulting_program = resulting_node->get_program();
             utils::print_to_file(dest_file_name+".prog", resulting_program->to_string(false));
-            //utils::print_to_file(output_file+".prog", resulting_program->to_string(false));
             stats_info->add_info_msg("SOLUTION FOUND!!!\n" + resulting_program->to_string(false));
         }
         else{
