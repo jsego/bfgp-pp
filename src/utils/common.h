@@ -44,7 +44,7 @@ typedef std::set<id_type> set_id_t;
 typedef std::set<value_t> set_value_t;
 typedef std::map<std::string,size_t> map_str_idx_t;
 
-#define MaxValue LONG_LONG_MAX
-#define MaxUValue ULONG_LONG_MAX
+#define MaxValue LLONG_MAX
+#define MaxUValue ULLONG_MAX
 
 #endif
