@@ -24,7 +24,7 @@ namespace utils{
 
     ///******* CHRONO METHODS *********
     std::chrono::time_point<std::chrono::system_clock> get_time(){
-        return std::chrono::high_resolution_clock::now();
+        return std::chrono::system_clock::now();
     }
 
     /// Precision up to 3 digits
