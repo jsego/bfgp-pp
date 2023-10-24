@@ -49,9 +49,9 @@ Validation of the planning program above in `easy`, `medium` and `hard`
 Gripper problems:
 
 ```shell
-./main.bin -m validation-prog -p experiments/gripper/gripper.prog -f domains/gripper/validation/easy/
-./main.bin -m validation-prog -p experiments/gripper/gripper.prog -f domains/gripper/validation/medium/
-./main.bin -m validation-prog -p experiments/gripper/gripper.prog -f domains/gripper/validation/hard/ 
+./main.bin -m validation-prog -p gripper.prog -f domains/gripper/validation/easy/
+./main.bin -m validation-prog -p gripper.prog -f domains/gripper/validation/medium/
+./main.bin -m validation-prog -p gripper.prog -f domains/gripper/validation/hard/ 
 ```
 The results will be placed in `experiments/gripper/validation/` folder, where
 all files should contain the input program, the number of input instance,
