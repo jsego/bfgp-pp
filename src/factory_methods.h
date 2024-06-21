@@ -107,7 +107,20 @@ namespace factories {
                 max_type_occurrences[kv.first] = std::max(max_type_occurrences[kv.first], kv.second);
             }
         }
-        /// 2.b Create as many pointers of each type as the max number of occurrences + number of extra pointers
+
+        /// 2.b Every type has max(max occurrences, parent max occurrences)
+        std::vector<ObjectType*> queue = {gd->get_domain()->get_object_type("object")};
+        size_t pos = 0;
+        while(pos < queue.size()){
+            auto next_node = queue[pos++];
+            auto parent_occurrences = max_type_occurrences[next_node->get_name()];
+            for(const auto &s : next_node->get_raw_subtypes()){
+                max_type_occurrences[s->get_name()] = std::max(max_type_occurrences[s->get_name()], parent_occurrences);
+                queue.emplace_back(s);
+            }
+        }
+
+        /// 2.c Create as many pointers of each type as the max number of occurrences + number of extra pointers
         for(const auto& t : max_type_occurrences){
             auto obj_type = gd->get_domain()->get_object_type(t.first);
             for(int ptr_num=0;ptr_num < t.second+n_extra_pointers;ptr_num++){
