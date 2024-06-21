@@ -240,7 +240,9 @@ namespace factories {
         return std::make_tuple(0, "OK");
     }
 
-    std::vector<std::unique_ptr<Program>> make_programs( utils::ArgumentParser* arg_parser, GeneralizedPlanningProblem *gpp){
+    std::vector<std::unique_ptr<Program>> make_programs( utils::ArgumentParser* arg_parser,
+                                                         GeneralizedPlanningProblem *gpp,
+                                                         bool only_last_program = false){
         auto prog_ins = utils::read_program_instructions(arg_parser->get_program_file_name());
         auto prog_lines = int(prog_ins.size());
         auto prog = std::make_unique<Program>(gpp);
@@ -274,6 +276,11 @@ namespace factories {
                 prog->set_instruction(dest_line, dest_ins);
             }
             programs.emplace_back(prog->copy());
+        }
+        if(only_last_program) {
+            std::vector<std::unique_ptr<Program>> program;
+            program.emplace_back(programs[(int) programs.size() - 1]->copy());
+            return program;
         }
         return programs;
     }

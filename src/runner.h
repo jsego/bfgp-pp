@@ -29,8 +29,8 @@ namespace runner{
         }
         auto mode_name = arg_parser->get_mode();
         std::vector<std::unique_ptr<Program>> programs;
-        if(mode_name == "repair"){
-            programs = factories::make_programs(arg_parser.get(), gpp.get());
+        if(mode_name == "repair"){ // TODO: add flexible & fixed repair modes, to get all or one root program
+            programs = factories::make_programs(arg_parser.get(), gpp.get(), true);
             if((int)programs[programs.size()-1]->get_num_instructions() != arg_parser->get_program_lines())
                 arg_parser->helper("The input program and the input number of program lines differ");
         }
@@ -200,9 +200,9 @@ namespace runner{
                                                             arg_parser->get_evaluation_function_names());
         auto dest_file_name = utils::join(dest_folder_file);
 
-        auto programs = factories::make_programs(arg_parser.get(), gpp.get());
+        auto programs = factories::make_programs(arg_parser.get(), gpp.get(), true);
         assert(not programs.empty());
-        std::unique_ptr<Program> prog = std::move(programs[programs.size()-1]); // pick only latest program
+        std::unique_ptr<Program> prog = std::move(programs[0]);
 
         stats_info->add_timer("program");
         stats_info->timers_info("Program loaded:", "gpp", "program");
